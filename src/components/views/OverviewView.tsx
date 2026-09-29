@@ -1,37 +1,21 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { 
   AlertTriangle, 
-  Wind, 
-  CloudRain, 
-  Waves, 
-  Clock, 
+  Truck, 
+  HeartPulse, 
   Building2, 
-  ShieldAlert, 
-  ArrowRight, 
-  Zap, 
-  Activity, 
-  ChevronRight, 
-  Compass, 
-  Eye, 
-  MapPin, 
-  Flame, 
-  CheckCircle2, 
   Users, 
-  Navigation, 
-  FileText, 
-  Sparkles, 
-  Send, 
-  SlidersHorizontal, 
-  Check,
-  Truck,
-  HeartPulse,
-  Building,
-  Layers
+  Zap, 
+  ArrowRight, 
+  ChevronRight, 
+  Clock, 
+  GitFork, 
+  ShieldAlert, 
+  ExternalLink,
+  ChevronDown
 } from 'lucide-react';
 import { InfrastructureAsset, CycloneScenario, DepartmentType } from '../../types';
-import { LocationConfig, SCENARIO_CONFIGS } from '../../data/locationDatasets';
-import { DifferentiatorBanner } from '../DifferentiatorBanner';
-import { DataIngestionStatus } from '../DataIngestionStatus';
+import { LocationConfig } from '../../data/locationDatasets';
 import { DisasterMap } from '../DisasterMap';
 
 interface OverviewViewProps {
@@ -67,158 +51,159 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
   selectedLocation = 'East Godavari, Andhra Pradesh',
   currentScenarioKey = 'standard',
 }) => {
-  // Bottom tab state
-  const [bottomTab, setBottomTab] = useState<
-    'damage_chain' | 'evacuation' | 'shelters' | 'gemini_copilot' | 'role_advisories'
-  >('damage_chain');
+  // Key assets for "What Needs Attention Now?"
+  const criticalRoad = assets.find(a => a.type === 'Arterial Road' || a.type === 'Coastal Bridge') || assets[0];
+  const criticalPower = assets.find(a => a.type === 'Power Substation') || assets[1];
+  const criticalHospital = assets.find(a => a.type === 'Hospital') || assets[2];
+  const criticalShelter = assets.find(a => a.type === 'Emergency Shelter') || assets[3];
 
-  // Currently inspected asset for right-side insights
-  const currentAsset = selectedAsset || assets[0] || ({} as InfrastructureAsset);
-
-  // Dynamic statistics from locationConfig
-  const highRiskWardsCount = locationConfig?.highRiskWards || 16;
-  const populationAtRiskFormatted = (locationConfig?.populationAtRisk || 180000).toLocaleString();
-  const roadScourEstimate = (locationConfig?.roadScourEstimateKm || 18.5).toFixed(1);
   const primaryChain = locationConfig?.damageChains?.[0];
-  const roadsList = locationConfig?.roads || [];
-  const primaryAdvisory = locationConfig?.advisories?.[0];
+
+  const populationAtRiskFormatted = (locationConfig?.populationAtRisk || 142000).toLocaleString();
 
   return (
-    <div className="space-y-6">
-      {/* Visual Differentiator Banner */}
-      <DifferentiatorBanner />
-
-      {/* Sector Focus Notice when active */}
-      {selectedDepartment !== 'ALL' && (
-        <div className="p-3.5 rounded-2xl bg-blue-50 border border-blue-200 text-blue-900 flex flex-wrap items-center justify-between gap-3 text-xs">
-          <div className="flex items-center gap-2 font-bold">
-            <span className="w-2 h-2 rounded-full bg-blue-600 animate-ping"></span>
-            <span>ACTIVE SECTOR DIRECTIVE: {selectedDepartment}</span>
-          </div>
-          <span className="text-slate-600">
-            Filtering dashboard metrics, GIS overlays, and action protocols specifically for {selectedDepartment} teams.
-          </span>
-          <button
-            onClick={() => onNavigateToTab('action-plan')}
-            className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl cursor-pointer shadow-2xs"
-          >
-            Open Sector Action Matrix →
-          </button>
-        </div>
-      )}
-
-      {/* 5 Enterprise KPI Cards (Clean White / Light Slate) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5">
+    <div className="space-y-5">
+      {/* ========================================================================= */}
+      {/* SECTION 7: TOP RISK SUMMARY (ONLY 4–5 IMPORTANT CLEAN KPI CARDS)         */}
+      {/* ========================================================================= */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
+        
+        {/* Card 1: Critical Assets */}
         <div 
           onClick={() => onNavigateToTab('infrastructure')}
-          className="p-4 rounded-2xl bg-white border border-slate-200/90 shadow-xs hover:border-rose-300 hover:shadow-sm cursor-pointer transition-all group"
+          style={{ 
+            background: 'linear-gradient(145deg, #FFFFFF 0%, #FDF8F9 100%)', 
+            boxShadow: '0 4px 18px rgba(20, 80, 120, 0.06)' 
+          }}
+          className="p-4 rounded-2xl border border-[#DCEAF3] border-t-2 border-t-rose-400 hover:border-rose-400 hover:shadow-md cursor-pointer transition-all group"
         >
-          <div className="flex items-center justify-between text-xs text-rose-700 font-mono font-bold uppercase tracking-wider">
-            <span>Critical Assets at Risk</span>
-            <div className="w-7 h-7 rounded-xl bg-rose-50 flex items-center justify-center text-rose-600">
-              <AlertTriangle className="w-4 h-4" />
+          <div className="flex items-center justify-between text-[11px] font-mono font-bold text-[#607D94] uppercase tracking-wider">
+            <span className="truncate">Critical Assets</span>
+            <div className="w-6 h-6 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
+              <AlertTriangle className="w-3.5 h-3.5" />
             </div>
           </div>
-          <div className="text-3xl font-black text-slate-900 font-mono mt-2">
+          <div className="text-3xl font-black text-[#102A43] font-mono mt-1.5">
             {kpis.assets}
           </div>
-          <div className="text-[11px] text-slate-500 mt-1 flex items-center justify-between font-medium">
-            <span>{locationConfig?.shortName || 'Coastal'} Sector</span>
+          <div className="text-[11px] text-[#607D94] mt-1 flex items-center justify-between">
+            <span>At risk in sector</span>
             <ChevronRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-0.5 transition-transform" />
           </div>
         </div>
 
+        {/* Card 2: High-Risk Roads */}
         <div 
-          onClick={() => onNavigateToTab('infrastructure')}
-          className="p-4 rounded-2xl bg-white border border-slate-200/90 shadow-xs hover:border-amber-300 hover:shadow-sm cursor-pointer transition-all group"
+          onClick={() => onNavigateToTab('evacuation-routes')}
+          style={{ 
+            background: 'linear-gradient(145deg, #FFFFFF 0%, #FEFAF6 100%)', 
+            boxShadow: '0 4px 18px rgba(20, 80, 120, 0.06)' 
+          }}
+          className="p-4 rounded-2xl border border-[#DCEAF3] border-t-2 border-t-amber-400 hover:border-amber-400 hover:shadow-md cursor-pointer transition-all group"
         >
-          <div className="flex items-center justify-between text-xs text-amber-700 font-mono font-bold uppercase tracking-wider">
-            <span>High-Risk Roads</span>
-            <div className="w-7 h-7 rounded-xl bg-amber-50 flex items-center justify-center text-amber-600">
-              <Truck className="w-4 h-4" />
+          <div className="flex items-center justify-between text-[11px] font-mono font-bold text-[#607D94] uppercase tracking-wider">
+            <span className="truncate">High-Risk Roads</span>
+            <div className="w-6 h-6 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+              <Truck className="w-3.5 h-3.5" />
             </div>
           </div>
-          <div className="text-3xl font-black text-slate-900 font-mono mt-2">
+          <div className="text-3xl font-black text-[#102A43] font-mono mt-1.5">
             {kpis.roads}
           </div>
-          <div className="text-[11px] text-slate-500 mt-1 flex items-center justify-between font-medium">
-            <span>{roadScourEstimate} km scour risk</span>
+          <div className="text-[11px] text-[#607D94] mt-1 flex items-center justify-between">
+            <span>Flood overtopping risk</span>
             <ChevronRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-0.5 transition-transform" />
           </div>
         </div>
 
+        {/* Card 3: Hospital Access Risk */}
         <div 
           onClick={() => onNavigateToTab('infrastructure')}
-          className="p-4 rounded-2xl bg-white border border-slate-200/90 shadow-xs hover:border-blue-300 hover:shadow-sm cursor-pointer transition-all group"
+          style={{ 
+            background: 'linear-gradient(145deg, #FFFFFF 0%, #F5F9FE 100%)', 
+            boxShadow: '0 4px 18px rgba(20, 80, 120, 0.06)' 
+          }}
+          className="p-4 rounded-2xl border border-[#DCEAF3] border-t-2 border-t-blue-400 hover:border-blue-400 hover:shadow-md cursor-pointer transition-all group"
         >
-          <div className="flex items-center justify-between text-xs text-blue-700 font-mono font-bold uppercase tracking-wider">
-            <span>Hospitals in Zone</span>
-            <div className="w-7 h-7 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600">
-              <HeartPulse className="w-4 h-4" />
+          <div className="flex items-center justify-between text-[11px] font-mono font-bold text-[#607D94] uppercase tracking-wider">
+            <span className="truncate">Hospital Access Risk</span>
+            <div className="w-6 h-6 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+              <HeartPulse className="w-3.5 h-3.5" />
             </div>
           </div>
-          <div className="text-3xl font-black text-slate-900 font-mono mt-2">
+          <div className="text-3xl font-black text-[#102A43] font-mono mt-1.5">
             {kpis.hospitals}
           </div>
-          <div className="text-[11px] text-slate-500 mt-1 flex items-center justify-between font-medium">
-            <span>Trauma & ICU standby</span>
+          <div className="text-[11px] text-[#607D94] mt-1 flex items-center justify-between">
+            <span>Trauma &amp; ICU standby</span>
             <ChevronRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-0.5 transition-transform" />
           </div>
         </div>
 
+        {/* Card 4: Shelters Needing Attention */}
         <div 
           onClick={() => onNavigateToTab('shelters')}
-          className="p-4 rounded-2xl bg-white border border-slate-200/90 shadow-xs hover:border-emerald-300 hover:shadow-sm cursor-pointer transition-all group"
+          style={{ 
+            background: 'linear-gradient(145deg, #FFFFFF 0%, #F3FAF6 100%)', 
+            boxShadow: '0 4px 18px rgba(20, 80, 120, 0.06)' 
+          }}
+          className="p-4 rounded-2xl border border-[#DCEAF3] border-t-2 border-t-emerald-400 hover:border-emerald-400 hover:shadow-md cursor-pointer transition-all group"
         >
-          <div className="flex items-center justify-between text-xs text-emerald-700 font-mono font-bold uppercase tracking-wider">
-            <span>Shelters Active</span>
-            <div className="w-7 h-7 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600">
-              <Building2 className="w-4 h-4" />
+          <div className="flex items-center justify-between text-[11px] font-mono font-bold text-[#607D94] uppercase tracking-wider">
+            <span className="truncate">Shelters Needing Attention</span>
+            <div className="w-6 h-6 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+              <Building2 className="w-3.5 h-3.5" />
             </div>
           </div>
-          <div className="text-3xl font-black text-slate-900 font-mono mt-2">
+          <div className="text-3xl font-black text-[#102A43] font-mono mt-1.5">
             {kpis.shelters}
           </div>
-          <div className="text-[11px] text-slate-500 mt-1 flex items-center justify-between font-medium">
-            <span>Fuel & drinking water logged</span>
+          <div className="text-[11px] text-[#607D94] mt-1 flex items-center justify-between">
+            <span>Capacity &amp; food buffers</span>
             <ChevronRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-0.5 transition-transform" />
           </div>
         </div>
 
+        {/* Card 5: Population At Risk */}
         <div 
-          onClick={() => onNavigateToTab('infrastructure')}
-          className="p-4 rounded-2xl bg-white border border-slate-200/90 shadow-xs hover:border-purple-300 hover:shadow-sm cursor-pointer transition-all group"
+          onClick={() => onNavigateToTab('hazard-map')}
+          style={{ 
+            background: 'linear-gradient(145deg, #FFFFFF 0%, #F9F7FD 100%)', 
+            boxShadow: '0 4px 18px rgba(20, 80, 120, 0.06)' 
+          }}
+          className="p-4 rounded-2xl border border-[#DCEAF3] border-t-2 border-t-purple-400 hover:border-purple-400 hover:shadow-md cursor-pointer transition-all group col-span-2 sm:col-span-1"
         >
-          <div className="flex items-center justify-between text-xs text-purple-700 font-mono font-bold uppercase tracking-wider">
-            <span>Power Assets at Risk</span>
-            <div className="w-7 h-7 rounded-xl bg-purple-50 flex items-center justify-center text-purple-600">
-              <Zap className="w-4 h-4" />
+          <div className="flex items-center justify-between text-[11px] font-mono font-bold text-[#607D94] uppercase tracking-wider">
+            <span className="truncate">Population at Risk</span>
+            <div className="w-6 h-6 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center shrink-0">
+              <Users className="w-3.5 h-3.5" />
             </div>
           </div>
-          <div className="text-3xl font-black text-slate-900 font-mono mt-2">
-            {kpis.power}
+          <div className="text-3xl font-black text-[#102A43] font-mono mt-1.5">
+            {populationAtRiskFormatted}
           </div>
-          <div className="text-[11px] text-slate-500 mt-1 flex items-center justify-between font-medium">
-            <span>Substations facing surge/wind</span>
+          <div className="text-[11px] text-[#607D94] mt-1 flex items-center justify-between">
+            <span>In low-elevation zone</span>
             <ChevronRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-0.5 transition-transform" />
           </div>
         </div>
       </div>
 
-      {/* MAIN DASHBOARD: CENTER INTERACTIVE MAP (7 cols) + RIGHT KEY INSIGHTS (5 cols) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* CENTER: Real Interactive DisasterMap */}
-        <div className="lg:col-span-7 h-[580px] flex flex-col">
+      {/* ========================================================================= */}
+      {/* MAIN DASHBOARD: MAP IS THE HERO (68% width) + RIGHT ACTION COL (32% width) */}
+      {/* ========================================================================= */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+        
+        {/* CENTER / LEFT: MAIN MAP IS THE HERO (~68% width) */}
+        <div className="lg:col-span-8 h-[700px] xl:h-[740px] flex flex-col">
           <DisasterMap
             assets={assets}
-            selectedAsset={currentAsset}
+            selectedAsset={selectedAsset}
             onSelectAsset={onSelectAsset}
-            onOpenDamageChain={(assetId) => {
-              setBottomTab('damage_chain');
-            }}
+            onOpenDamageChain={() => onNavigateToTab('damage-chain')}
             onDraftAdvisory={onDraftAdvisory}
             activeScenarioName={scenario.name}
-            showEvacuationRoute={bottomTab === 'evacuation'}
+            showEvacuationRoute={true}
             selectedLocation={selectedLocation}
             selectedDepartment={selectedDepartment}
             currentScenarioKey={currentScenarioKey}
@@ -226,358 +211,216 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
           />
         </div>
 
-        {/* RIGHT: Key Insights, Asset Risk Details & Actions */}
-        <div className="lg:col-span-5 space-y-4 flex flex-col justify-between">
-          <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs">
-            <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
+        {/* RIGHT COLUMN: ACTION SUMMARY (32% width) */}
+        <div className="lg:col-span-4 space-y-4">
+          
+          {/* Card 1: WHAT NEEDS ATTENTION NOW? (Section 10) */}
+          <div 
+            style={{ 
+              background: 'linear-gradient(145deg, #FFFFFF 0%, #F8FBFE 100%)', 
+              boxShadow: '0 4px 18px rgba(20, 80, 120, 0.06)' 
+            }}
+            className="border border-[#DCEAF3] rounded-2xl p-4 sm:p-5"
+          >
+            <div className="flex items-center justify-between pb-3 mb-3 border-b border-[#DCEAF3]/80">
               <div className="flex items-center gap-2">
-                <Activity className="w-4 h-4 text-blue-600" />
-                <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wide">
-                  Tactical Impact Insights
+                <span className="w-2.5 h-2.5 rounded-full bg-rose-600 animate-pulse"></span>
+                <h3 className="text-xs font-bold text-[#102A43] uppercase font-mono tracking-wider">
+                  What Needs Attention Now?
                 </h3>
               </div>
-              <span className="font-mono text-xs px-2.5 py-0.5 rounded-full bg-rose-50 text-rose-700 font-bold border border-rose-200">
-                T-MINUS {locationConfig?.baseTimeToLandfallHours || 18} HOURS
+              <span className="text-[10px] font-mono text-[#607D94] font-semibold">Priority Triage</span>
+            </div>
+
+            <div className="space-y-2.5">
+              {/* Item 1: Road Risk */}
+              <div className="p-3 rounded-xl bg-[#F0F6FA] border border-[#DCEAF3] hover:border-blue-300 transition-colors flex items-start justify-between gap-3 text-xs">
+                <div className="space-y-0.5">
+                  <div className="flex items-center gap-1.5 font-bold text-[#102A43]">
+                    <span className="w-2 h-2 rounded-full bg-rose-600 shrink-0"></span>
+                    <span>{criticalRoad.name.split('(')[0] || 'ROAD R17'}</span>
+                  </div>
+                  <p className="text-[11px] text-[#607D94] leading-snug">
+                    Flood risk may make the route unsafe. Expected overtopping &gt;1.2m.
+                  </p>
+                </div>
+                <button
+                  onClick={() => onSelectAsset(criticalRoad)}
+                  className="px-2.5 py-1 bg-white border border-[#DCEAF3] hover:bg-blue-50 text-blue-700 font-bold text-[11px] rounded-lg shrink-0 cursor-pointer shadow-2xs"
+                >
+                  View Details
+                </button>
+              </div>
+
+              {/* Item 2: Power Substation */}
+              <div className="p-3 rounded-xl bg-[#F0F6FA] border border-[#DCEAF3] hover:border-amber-300 transition-colors flex items-start justify-between gap-3 text-xs">
+                <div className="space-y-0.5">
+                  <div className="flex items-center gap-1.5 font-bold text-[#102A43]">
+                    <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0"></span>
+                    <span>{criticalPower.name.split('(')[0] || 'SUBSTATION P3'}</span>
+                  </div>
+                  <p className="text-[11px] text-[#607D94] leading-snug">
+                    Storm surge exposure — auxiliary backup generator and fuel review required.
+                  </p>
+                </div>
+                <button
+                  onClick={() => onSelectAsset(criticalPower)}
+                  className="px-2.5 py-1 bg-white border border-[#DCEAF3] hover:bg-blue-50 text-blue-700 font-bold text-[11px] rounded-lg shrink-0 cursor-pointer shadow-2xs"
+                >
+                  View Details
+                </button>
+              </div>
+
+              {/* Item 3: Hospital Access */}
+              <div className="p-3 rounded-xl bg-[#F0F6FA] border border-[#DCEAF3] hover:border-rose-300 transition-colors flex items-start justify-between gap-3 text-xs">
+                <div className="space-y-0.5">
+                  <div className="flex items-center gap-1.5 font-bold text-[#102A43]">
+                    <span className="w-2 h-2 rounded-full bg-rose-600 shrink-0"></span>
+                    <span>{criticalHospital.name.split('(')[0] || 'HOSPITAL H2'}</span>
+                  </div>
+                  <p className="text-[11px] text-[#607D94] leading-snug">
+                    Ambulance access risk detected. Emergency detour route R-21 staging required.
+                  </p>
+                </div>
+                <button
+                  onClick={() => onSelectAsset(criticalHospital)}
+                  className="px-2.5 py-1 bg-white border border-[#DCEAF3] hover:bg-blue-50 text-blue-700 font-bold text-[11px] rounded-lg shrink-0 cursor-pointer shadow-2xs"
+                >
+                  View Details
+                </button>
+              </div>
+
+              {/* Item 4: Shelter Capacity */}
+              <div className="p-3 rounded-xl bg-[#F0F6FA] border border-[#DCEAF3] hover:border-emerald-300 transition-colors flex items-start justify-between gap-3 text-xs">
+                <div className="space-y-0.5">
+                  <div className="flex items-center gap-1.5 font-bold text-[#102A43]">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>
+                    <span>{criticalShelter.name.split('(')[0] || 'SHELTER S4'}</span>
+                  </div>
+                  <p className="text-[11px] text-[#607D94] leading-snug">
+                    Review occupancy threshold and emergency drinking water buffer.
+                  </p>
+                </div>
+                <button
+                  onClick={() => onSelectAsset(criticalShelter)}
+                  className="px-2.5 py-1 bg-white border border-[#DCEAF3] hover:bg-blue-50 text-blue-700 font-bold text-[11px] rounded-lg shrink-0 cursor-pointer shadow-2xs"
+                >
+                  View Details
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Card 2: SIMPLE DAMAGE CHAIN (Section 11) */}
+          <div 
+            style={{ 
+              background: 'linear-gradient(145deg, #FFFFFF 0%, #FAF8FE 100%)', 
+              boxShadow: '0 4px 18px rgba(20, 80, 120, 0.06)' 
+            }}
+            className="border border-[#DCEAF3] rounded-2xl p-4 sm:p-5"
+          >
+            <div className="flex items-center justify-between pb-3 mb-3 border-b border-[#DCEAF3]/80">
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center shrink-0">
+                  <GitFork className="w-3.5 h-3.5" />
+                </div>
+                <h3 className="text-xs font-bold text-[#102A43] uppercase font-mono tracking-wider">
+                  Damage Chain
+                </h3>
+              </div>
+              <span className="text-[10px] font-mono text-purple-700 font-bold bg-purple-50 px-2 py-0.5 rounded-lg border border-purple-200">
+                Cascading Impact
               </span>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 text-xs mb-3 font-mono">
-              <div className="p-3 rounded-xl bg-slate-50 border border-slate-100">
-                <span className="text-[10px] text-slate-500 uppercase block font-semibold">High-Risk Wards</span>
-                <span className="text-lg font-black text-rose-700">{highRiskWardsCount} Sectors</span>
-                <div className="text-[10px] text-slate-500 mt-0.5 truncate">{locationConfig?.name || selectedLocation}</div>
+            {/* Simple Step-by-Step Chain */}
+            <div className="space-y-1.5 text-xs text-[#102A43] font-medium bg-[#F0F6FA] p-3 rounded-xl border border-[#DCEAF3]">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-blue-600"></span>
+                <span>Heavy Rain &amp; Storm Surge</span>
               </div>
-
-              <div className="p-3 rounded-xl bg-slate-50 border border-slate-100">
-                <span className="text-[10px] text-slate-500 uppercase block font-semibold">Population at Risk</span>
-                <span className="text-lg font-black text-amber-700">{populationAtRiskFormatted}</span>
-                <div className="text-[10px] text-slate-500 mt-0.5">Low-lying surge zone</div>
+              <div className="text-[#607D94] pl-3.5 text-[10px]">&darr;</div>
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-amber-600"></span>
+                <span>Road R17 Flooding (&gt;1.2m)</span>
               </div>
-
-              <div className="p-3 rounded-xl bg-slate-50 border border-slate-100">
-                <span className="text-[10px] text-slate-500 uppercase block font-semibold">Estimated Road Scour</span>
-                <span className="text-lg font-black text-blue-700">{roadScourEstimate} km</span>
-                <div className="text-[10px] text-slate-500 mt-0.5">Coastal highways & tidal links</div>
+              <div className="text-[#607D94] pl-3.5 text-[10px]">&darr;</div>
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-rose-600"></span>
+                <span>Ambulance Access Blockage</span>
               </div>
-
-              <div className="p-3 rounded-xl bg-slate-50 border border-slate-100">
-                <span className="text-[10px] text-slate-500 uppercase block font-semibold">Projected Grid Outage</span>
-                <span className="text-lg font-black text-purple-700">{kpis.power} Substations</span>
-                <div className="text-[10px] text-slate-500 mt-0.5">Auxiliary fuel alerts staged</div>
+              <div className="text-[#607D94] pl-3.5 text-[10px]">&darr;</div>
+              <div className="flex items-center gap-2 font-bold text-[#102A43]">
+                <span className="w-2 h-2 rounded-full bg-purple-600"></span>
+                <span>Hospital H2 Oxygen &amp; Trauma Crisis</span>
               </div>
             </div>
 
-            {/* Currently Selected Asset Risk Dossier */}
-            <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="font-mono text-[10px] px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 font-bold border border-blue-200">
-                  INSPECTED ASSET: {currentAsset.id || 'N/A'}
-                </span>
-                <span className="font-mono text-rose-700 font-bold">
-                  RISK: {currentAsset.riskScore || 0}/100 [{currentAsset.riskLevel || 'N/A'}]
-                </span>
-              </div>
-
-              <h4 className="text-sm font-bold text-slate-900">{currentAsset.name || 'Select an asset from the map'}</h4>
-              <p className="text-slate-600 leading-relaxed text-xs">
-                <strong className="text-slate-700">Vulnerability:</strong> {currentAsset.vulnerability || 'N/A'}
-              </p>
-              <div className="text-xs text-purple-700 font-mono font-medium">
-                Dependencies: {currentAsset.dependencies?.join(', ') || 'None identified'}
-              </div>
-            </div>
-
-            {/* Recommended Action */}
-            <div className="mt-3 p-3.5 rounded-xl bg-blue-50/70 border border-blue-200 text-xs">
-              <div className="text-[10px] font-mono uppercase text-blue-700 font-bold mb-1 flex items-center gap-1.5">
-                <ShieldAlert className="w-3.5 h-3.5 text-blue-600" />
-                Priority Directive:
-              </div>
-              <p className="text-slate-800 leading-relaxed font-medium">
-                {currentAsset.recommendedActions?.[0] || 'Maintain real-time telemetry and storm barricades.'}
-              </p>
-            </div>
-
-            <div className="flex items-center justify-between gap-2 mt-4 pt-3 border-t border-slate-100 text-xs">
-              <button
-                onClick={() => onSelectAsset(currentAsset)}
-                className="text-blue-600 hover:text-blue-700 font-bold cursor-pointer"
-              >
-                Open Full Asset Profile →
-              </button>
-              {onDraftAdvisory && (
-                <button
-                  onClick={() => onDraftAdvisory(currentAsset)}
-                  className="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-xs cursor-pointer flex items-center gap-1.5"
-                >
-                  <Sparkles className="w-3.5 h-3.5" />
-                  Generate Advisory
-                </button>
-              )}
-            </div>
+            <button
+              onClick={() => onNavigateToTab('damage-chain')}
+              className="mt-3 w-full py-2 px-3 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-700 font-bold text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer border border-purple-200 shadow-2xs"
+            >
+              <span>Explore Damage Chain</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
           </div>
+
+          {/* Card 3: SIMPLE ACTION PLAN (Section 12) */}
+          <div 
+            style={{ 
+              background: 'linear-gradient(145deg, #FFFFFF 0%, #F5FAFD 100%)', 
+              boxShadow: '0 4px 18px rgba(20, 80, 120, 0.06)' 
+            }}
+            className="border border-[#DCEAF3] rounded-2xl p-4 sm:p-5"
+          >
+            <div className="flex items-center justify-between pb-3 mb-3 border-b border-[#DCEAF3]/80">
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
+                  <Clock className="w-3.5 h-3.5" />
+                </div>
+                <h3 className="text-xs font-bold text-[#102A43] uppercase font-mono tracking-wider">
+                  Next Actions
+                </h3>
+              </div>
+              <span className="text-[10px] font-mono text-blue-700 font-bold bg-blue-50 px-2 py-0.5 rounded-lg border border-blue-200">
+                Timeline Triage
+              </span>
+            </div>
+
+            <div className="space-y-2 text-xs">
+              <div className="flex items-center justify-between p-2 rounded-lg bg-[#F0F6FA] border border-[#DCEAF3]">
+                <span className="font-mono font-bold text-[#102A43]">T−24h</span>
+                <span className="text-[#607D94] text-[11px]">Review critical assets</span>
+                <span className="text-[10px] font-mono text-emerald-600 font-bold bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">Done</span>
+              </div>
+              <div className="flex items-center justify-between p-2 rounded-lg bg-amber-50/80 border border-amber-200">
+                <span className="font-mono font-bold text-amber-900">T−12h</span>
+                <span className="text-[#102A43] text-[11px] font-medium">Prepare emergency resources</span>
+                <span className="text-[10px] font-mono text-amber-700 font-bold bg-amber-100 px-1.5 py-0.5 rounded">Active</span>
+              </div>
+              <div className="flex items-center justify-between p-2 rounded-lg bg-[#F0F6FA] border border-[#DCEAF3]">
+                <span className="font-mono font-bold text-[#102A43]">T−6h</span>
+                <span className="text-[#607D94] text-[11px]">Confirm hospital &amp; shelter readiness</span>
+                <span className="text-[10px] font-mono text-[#607D94]">Scheduled</span>
+              </div>
+              <div className="flex items-center justify-between p-2 rounded-lg bg-[#F0F6FA] border border-[#DCEAF3]">
+                <span className="font-mono font-bold text-[#102A43]">T−3h</span>
+                <span className="text-[#607D94] text-[11px]">Verify evacuation routes</span>
+                <span className="text-[10px] font-mono text-[#607D94]">Scheduled</span>
+              </div>
+            </div>
+
+            <button
+              onClick={() => onNavigateToTab('action-plan')}
+              className="mt-3 w-full py-2 px-3 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer border border-blue-200 shadow-2xs"
+            >
+              <span>Open Full Action Plan</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
         </div>
       </div>
-
-      {/* BOTTOM SECTION: MULTI-TAB INTELLIGENCE CONSOLE */}
-      <div className="bg-white border border-slate-200/90 rounded-2xl shadow-xs overflow-hidden">
-        {/* Tab Headers */}
-        <div className="bg-slate-50 border-b border-slate-200 px-4 py-2 flex items-center gap-2 overflow-x-auto text-xs font-mono">
-          <span className="text-slate-400 uppercase tracking-wider text-[10px] mr-2 font-bold">Operational Console:</span>
-          
-          <button
-            onClick={() => setBottomTab('damage_chain')}
-            className={`px-3 py-1.5 rounded-xl font-bold transition-all cursor-pointer ${
-              bottomTab === 'damage_chain'
-                ? 'bg-purple-600 text-white shadow-xs'
-                : 'text-slate-600 hover:text-slate-900 bg-white border border-slate-200/80'
-            }`}
-          >
-            Damage Chain Analysis
-          </button>
-
-          <button
-            onClick={() => setBottomTab('evacuation')}
-            className={`px-3 py-1.5 rounded-xl font-bold transition-all cursor-pointer ${
-              bottomTab === 'evacuation'
-                ? 'bg-emerald-600 text-white shadow-xs'
-                : 'text-slate-600 hover:text-slate-900 bg-white border border-slate-200/80'
-            }`}
-          >
-            Evacuation Route Recommendation
-          </button>
-
-          <button
-            onClick={() => setBottomTab('shelters')}
-            className={`px-3 py-1.5 rounded-xl font-bold transition-all cursor-pointer ${
-              bottomTab === 'shelters'
-                ? 'bg-blue-600 text-white shadow-xs'
-                : 'text-slate-600 hover:text-slate-900 bg-white border border-slate-200/80'
-            }`}
-          >
-            Shelter Status & Logistics
-          </button>
-
-          <button
-            onClick={() => setBottomTab('gemini_copilot')}
-            className={`px-3 py-1.5 rounded-xl font-bold transition-all cursor-pointer ${
-              bottomTab === 'gemini_copilot'
-                ? 'bg-sky-600 text-white shadow-xs'
-                : 'text-slate-600 hover:text-slate-900 bg-white border border-slate-200/80'
-            }`}
-          >
-            Gemini Advisory Copilot
-          </button>
-
-          <button
-            onClick={() => setBottomTab('role_advisories')}
-            className={`px-3 py-1.5 rounded-xl font-bold transition-all cursor-pointer ${
-              bottomTab === 'role_advisories'
-                ? 'bg-indigo-600 text-white shadow-xs'
-                : 'text-slate-600 hover:text-slate-900 bg-white border border-slate-200/80'
-            }`}
-          >
-            Role-Specific Directives
-          </button>
-        </div>
-
-        {/* Tab Body Contents */}
-        <div className="p-5 text-xs">
-          {/* TAB 1: DAMAGE CHAIN ANALYSIS */}
-          {bottomTab === 'damage_chain' && (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h4 className="text-sm font-bold text-slate-900 uppercase tracking-wide">
-                    {primaryChain?.title || 'Infrastructure Dependency Intelligence — Primary Active Cascade'}
-                  </h4>
-                  <p className="text-slate-500 mt-0.5">
-                    Trigger Hazard: {primaryChain?.triggerHazard || 'Storm surge and inland river swelling'}
-                  </p>
-                </div>
-                <button
-                  onClick={() => onNavigateToTab('damage-chain')}
-                  className="text-blue-600 hover:underline font-bold font-mono cursor-pointer"
-                >
-                  Full Graph View →
-                </button>
-              </div>
-
-              {/* Chain Diagram Flow */}
-              <div className="flex flex-wrap items-center justify-between gap-2 p-4 rounded-xl bg-slate-50 border border-slate-200 overflow-x-auto">
-                {(primaryChain?.nodes || [
-                  { id: '1', label: '1. TRIGGER', description: 'Surge Inundation', riskLevel: 'CRITICAL' },
-                  { id: '2', label: '2. ARTERIAL BREACH', description: 'Coastal Road Submerged', riskLevel: 'CRITICAL' },
-                  { id: '3', label: '3. GRID INTERRUPTION', description: 'Transformer Trip', riskLevel: 'HIGH' },
-                  { id: '4', label: '4. HOSPITAL IMPACT', description: 'Auxiliary Power Only', riskLevel: 'CRITICAL' },
-                  { id: '5', label: '5. INTERVENTION', description: 'Staged Diesel Buffer', riskLevel: 'MEDIUM' },
-                ]).map((node, idx, arr) => (
-                  <React.Fragment key={node.id}>
-                    <div className="p-3 rounded-xl bg-white border border-slate-200 text-center min-w-[140px] shadow-2xs">
-                      <span className="text-[9px] font-mono uppercase text-blue-700 block font-bold">NODE {idx + 1}</span>
-                      <span className="font-bold text-slate-900 text-xs block">{node.label}</span>
-                      <span className="text-[10px] text-slate-500 block mt-0.5">{node.description}</span>
-                    </div>
-                    {idx < arr.length - 1 && <ArrowRight className="w-4 h-4 text-slate-400 shrink-0" />}
-                  </React.Fragment>
-                ))}
-              </div>
-
-              {primaryChain?.potentialConsequence && (
-                <div className="p-3 rounded-xl bg-purple-50/70 border border-purple-200 text-purple-900 font-medium">
-                  <strong>Cascading Consequence:</strong> {primaryChain.potentialConsequence}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* TAB 2: EVACUATION ROUTE RECOMMENDATION */}
-          {bottomTab === 'evacuation' && (
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h4 className="text-sm font-bold text-slate-900 uppercase tracking-wide">
-                    Recommended Evacuation Corridors ({locationConfig?.name || selectedLocation})
-                  </h4>
-                  <p className="text-slate-500">
-                    Real-time hydrodynamic clearance comparison for hospital transfer & public evacuation convoys.
-                  </p>
-                </div>
-                <button
-                  onClick={() => onNavigateToTab('evacuation-routes')}
-                  className="text-blue-600 hover:underline font-bold font-mono cursor-pointer"
-                >
-                  Interactive Routing Engine →
-                </button>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {roadsList.length >= 2 ? (
-                  <>
-                    <div className="p-4 rounded-xl bg-rose-50/70 border border-rose-200 text-xs">
-                      <div className="flex items-center justify-between text-rose-800 font-bold mb-1">
-                        <span>Route A: {roadsList[0].name}</span>
-                        <span className="font-mono text-[10px] px-2 py-0.5 rounded-full bg-rose-600 text-white font-bold">
-                          NOT RECOMMENDED
-                        </span>
-                      </div>
-                      <p className="text-slate-700 text-xs leading-relaxed">
-                        Flood Depth: {roadsList[0].floodDepth} • {roadsList[0].expectedDisruption}.
-                        Ambulances and low-clearance vehicles strictly restricted.
-                      </p>
-                    </div>
-
-                    <div className="p-4 rounded-xl bg-emerald-50/70 border border-emerald-200 text-xs">
-                      <div className="flex items-center justify-between text-emerald-800 font-bold mb-1">
-                        <span>Route B: {roadsList[1].name}</span>
-                        <span className="font-mono text-[10px] px-2 py-0.5 rounded-full bg-emerald-600 text-white font-bold">
-                          RECOMMENDED
-                        </span>
-                      </div>
-                      <p className="text-slate-700 text-xs leading-relaxed">
-                        Passage clear • Flood Depth: {roadsList[1].floodDepth}.
-                        {roadsList[1].expectedDisruption}. Priority corridor designated for emergency convoys.
-                      </p>
-                    </div>
-                  </>
-                ) : (
-                  <div className="col-span-2 p-4 rounded-xl bg-slate-50 border border-slate-200 text-center text-slate-500">
-                    Loading district evacuation corridors for {locationConfig?.shortName || selectedLocation}...
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* TAB 3: SHELTER STATUS & LOGISTICS */}
-          {bottomTab === 'shelters' && (
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h4 className="text-sm font-bold text-slate-900 uppercase tracking-wide">
-                    Designated Cyclone Shelters Roster ({locationConfig?.shortName || selectedLocation})
-                  </h4>
-                  <p className="text-slate-500">Multi-purpose cyclone refuges monitored for capacity, fuel, and drinking water.</p>
-                </div>
-                <button
-                  onClick={() => onNavigateToTab('shelters')}
-                  className="text-blue-600 hover:underline font-bold font-mono cursor-pointer"
-                >
-                  Full Shelters Roster →
-                </button>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-                {assets.filter(a => a.type === 'Emergency Shelter').slice(0, 3).map(shelter => (
-                  <div key={shelter.id} className="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
-                    <span className="text-[10px] font-mono text-blue-700 block font-bold">{shelter.id}: {shelter.name}</span>
-                    <div className="font-bold text-slate-900 mt-1">{shelter.capacity || 'Capacity: 2,000 persons'}</div>
-                    <div className="text-[10px] text-emerald-700 font-semibold mt-0.5">
-                      Backup Power: {shelter.backupPower || 'Verified standby generator'}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* TAB 4: GEMINI ADVISORY COPILOT */}
-          {bottomTab === 'gemini_copilot' && (
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h4 className="text-sm font-bold text-slate-900 uppercase tracking-wide flex items-center gap-1.5">
-                    <Sparkles className="w-4 h-4 text-blue-600" />
-                    Gemini AI Advisory Copilot (Structured Model Explanation)
-                  </h4>
-                  <p className="text-slate-500">
-                    Translates multi-hazard risk numbers into authoritative drafts for authorized officer review.
-                  </p>
-                </div>
-                <button
-                  onClick={() => onNavigateToTab('advisories')}
-                  className="text-blue-600 hover:underline font-bold font-mono cursor-pointer"
-                >
-                  Open AI Advisory Studio →
-                </button>
-              </div>
-
-              <div className="p-4 rounded-xl bg-blue-50/60 border border-blue-200 text-xs text-slate-800 leading-relaxed font-sans">
-                &ldquo;{primaryAdvisory?.situationSummary || `Based on simulated multi-hazard projections for ${scenario.name}, District facilities in ${locationConfig?.shortName || selectedLocation} exhibit elevated exposure. Authorities should verify emergency backup power and clear designated evacuation corridors.`}&rdquo;
-              </div>
-            </div>
-          )}
-
-          {/* TAB 5: ROLE-SPECIFIC DIRECTIVES */}
-          {bottomTab === 'role_advisories' && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
-              <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
-                <span className="font-mono text-rose-700 font-bold block mb-1">HEALTH COMMAND:</span>
-                <p className="text-slate-700 leading-relaxed text-xs">
-                  Prioritize ICU rooftop generator circuits; reroute 108 emergency ambulance dispatch to bypass corridors; maintain 72hr medical oxygen buffers.
-                </p>
-              </div>
-
-              <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
-                <span className="font-mono text-purple-700 font-bold block mb-1">POWER DEPARTMENT:</span>
-                <p className="text-slate-700 leading-relaxed text-xs">
-                  Pre-position mobile transformer trailers and submersible dewatering pumps in low-lying switchyards; isolate non-critical coastal feeder loops.
-                </p>
-              </div>
-
-              <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
-                <span className="font-mono text-amber-700 font-bold block mb-1">ROADS & BRIDGES (PWD):</span>
-                <p className="text-slate-700 leading-relaxed text-xs">
-                  Close vulnerable coastal bridges to heavy commercial trucks; mobilize front-end loaders and motorized chainsaws along bypass corridors.
-                </p>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Multi-Source Ingestion Telemetry Footer Component */}
-      <DataIngestionStatus />
     </div>
   );
 };

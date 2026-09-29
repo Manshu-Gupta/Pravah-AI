@@ -45,6 +45,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({
   const [previewScenario, setPreviewScenario] = useState<'BASE' | 'RAIN' | 'SURGE'>('BASE');
   const [activeStakeholderTab, setActiveStakeholderTab] = useState<number>(0);
 
+  // Dedicated Login Modals state (Sections 1, 2, 3)
+  const [showAuthorityModal, setShowAuthorityModal] = useState<boolean>(false);
+  const [showCitizenModal, setShowCitizenModal] = useState<boolean>(false);
+  const [officerId, setOfficerId] = useState<string>('admin');
+  const [officerPassword, setOfficerPassword] = useState<string>('demo123');
+  const [citizenName, setCitizenName] = useState<string>('Citizen User');
+  const [loginError, setLoginError] = useState<string | null>(null);
+
   const demoOfficers = [
     { name: 'Officer S. Patnaik', designation: 'Collector & District Magistrate (EOC Command)' },
     { name: 'Er. A. Ray', designation: 'Superintending Engineer (Power Grid & Substations)' },
@@ -55,6 +63,23 @@ export const LandingPage: React.FC<LandingPageProps> = ({
   const handleOfficerSelect = (officer: { name: string; designation: string }) => {
     setSelectedOfficer(officer.name);
     setOfficerDesignation(officer.designation);
+  };
+
+  const handleAuthoritySignIn = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!officerId.trim()) {
+      setLoginError('Please enter your Officer ID');
+      return;
+    }
+    setLoginError(null);
+    setShowAuthorityModal(false);
+    onSelectRole('ADMIN', selectedOfficer, selectedLocation);
+  };
+
+  const handleCitizenContinue = (e: React.FormEvent) => {
+    e.preventDefault();
+    setShowCitizenModal(false);
+    onSelectRole('CITIZEN', citizenName.trim() || 'Citizen User', selectedLocation);
   };
 
   const scrollToSection = (id: string) => {
@@ -180,14 +205,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           {/* Right Action CTA Buttons */}
           <div className="flex items-center gap-2.5">
             <button
-              onClick={() => onSelectRole('CITIZEN', 'Citizen User', selectedLocation)}
+              onClick={() => setShowCitizenModal(true)}
               className="px-3 sm:px-4 py-2 rounded-xl bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 text-slate-700 text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 border border-slate-200 hover:border-emerald-300"
             >
               <Users className="w-3.5 h-3.5 text-emerald-600" />
               <span>Citizen Portal</span>
             </button>
             <button
-              onClick={() => onSelectRole('ADMIN', selectedOfficer, selectedLocation)}
+              onClick={() => setShowAuthorityModal(true)}
               className="px-3.5 sm:px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 shadow-sm shadow-blue-500/20"
             >
               <Shield className="w-3.5 h-3.5" />
@@ -212,11 +237,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               </div>
 
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight leading-[1.1]">
-                From Cyclone Forecasts to <span className="text-blue-600">Coordinated Action.</span>
+                From cyclone forecasts to <span className="text-blue-600">coordinated action.</span>
               </h1>
 
               <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-2xl">
-                PRAVAH AI is an AI-powered cyclone impact and infrastructure intelligence platform that helps authorities identify vulnerable assets, understand cascading risks, prioritize preparedness, and communicate actionable guidance.
+                PRAVAH AI connects weather intelligence, geospatial exposure, infrastructure vulnerability and AI-powered decision support to help communities and authorities prepare before extreme weather impacts.
               </p>
 
               {/* District Quick-Switch Selector */}
@@ -241,27 +266,55 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                 </span>
               </div>
 
-              {/* Action Buttons */}
-              <div className="flex flex-wrap items-center gap-3 pt-2">
-                <button
-                  onClick={() => onSelectRole('ADMIN', selectedOfficer, selectedLocation)}
-                  className="px-6 py-3.5 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm flex items-center gap-2 shadow-md shadow-blue-500/25 transition-all cursor-pointer hover:translate-y-[-1px]"
-                >
-                  <span>Authority Dashboard</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
+              {/* Two Clear Primary Options (Section 1) */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-xl pt-2">
+                {/* Option 1: AUTHORITY / ADMIN */}
+                <div className="p-4 rounded-2xl bg-white border-2 border-slate-200/90 hover:border-blue-500 shadow-xs transition-all flex flex-col justify-between group">
+                  <div>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="text-[10px] font-mono font-bold uppercase text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
+                        COMMAND EOC
+                      </span>
+                      <Shield className="w-4 h-4 text-blue-600" />
+                    </div>
+                    <h3 className="font-black text-slate-900 text-sm">AUTHORITY / ADMIN</h3>
+                    <p className="text-xs text-slate-500 mt-0.5">Decision Support</p>
+                  </div>
+                  <button
+                    onClick={() => setShowAuthorityModal(true)}
+                    className="mt-4 w-full py-2.5 px-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer shadow-xs transition-colors"
+                  >
+                    <span>Login as Authority</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </button>
+                </div>
 
-                <button
-                  onClick={() => onSelectRole('CITIZEN', 'Citizen User', selectedLocation)}
-                  className="px-6 py-3.5 rounded-2xl bg-white hover:bg-slate-50 text-slate-800 font-bold text-sm flex items-center gap-2 border border-slate-300 shadow-xs transition-all cursor-pointer"
-                >
-                  <Users className="w-4 h-4 text-emerald-600" />
-                  <span>Citizen Safety Portal</span>
-                </button>
+                {/* Option 2: CITIZEN */}
+                <div className="p-4 rounded-2xl bg-white border-2 border-slate-200/90 hover:border-emerald-500 shadow-xs transition-all flex flex-col justify-between group">
+                  <div>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="text-[10px] font-mono font-bold uppercase text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                        PUBLIC ACCESS
+                      </span>
+                      <Users className="w-4 h-4 text-emerald-600" />
+                    </div>
+                    <h3 className="font-black text-slate-900 text-sm">CITIZEN</h3>
+                    <p className="text-xs text-slate-500 mt-0.5">Safety &amp; Evacuation</p>
+                  </div>
+                  <button
+                    onClick={() => setShowCitizenModal(true)}
+                    className="mt-4 w-full py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer shadow-xs transition-colors"
+                  >
+                    <span>Continue as Citizen</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
 
+              <div className="pt-1">
                 <button
                   onClick={() => scrollToSection('problem')}
-                  className="px-4 py-3.5 text-slate-500 hover:text-blue-600 text-xs font-semibold flex items-center gap-1 transition-colors cursor-pointer ml-1"
+                  className="text-slate-500 hover:text-blue-600 text-xs font-semibold flex items-center gap-1 transition-colors cursor-pointer"
                 >
                   <span>Explore how PRAVAH AI works</span>
                   <ChevronDown className="w-3.5 h-3.5" />
@@ -401,7 +454,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                     <span className="text-emerald-700 font-semibold">Prioritized Action</span>
                   </div>
                   <button
-                    onClick={() => onSelectRole('ADMIN', selectedOfficer, selectedLocation)}
+                    onClick={() => setShowAuthorityModal(true)}
                     className="text-blue-600 font-bold hover:underline flex items-center gap-0.5 cursor-pointer"
                   >
                     <span>Launch</span>
@@ -1087,7 +1140,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               </div>
 
               <button
-                onClick={() => onSelectRole('ADMIN', selectedOfficer, selectedLocation)}
+                onClick={() => setShowAuthorityModal(true)}
                 className="w-full py-4 px-6 rounded-2xl bg-slate-900 hover:bg-blue-600 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition-all cursor-pointer group-hover:bg-blue-600"
               >
                 <span>LOGIN AS AUTHORITY / ADMIN</span>
@@ -1170,7 +1223,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               </div>
 
               <button
-                onClick={() => onSelectRole('CITIZEN', 'Citizen User', selectedLocation)}
+                onClick={() => setShowCitizenModal(true)}
                 className="w-full py-4 px-6 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition-all cursor-pointer"
               >
                 <span>LOGIN AS CITIZEN / PUBLIC USER</span>
@@ -1201,14 +1254,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({
 
           <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
             <button
-              onClick={() => onSelectRole('ADMIN', selectedOfficer, selectedLocation)}
+              onClick={() => setShowAuthorityModal(true)}
               className="px-6 py-3.5 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm flex items-center gap-2 shadow-lg transition-all cursor-pointer"
             >
               <span>Enter Authority Command Center</span>
               <ArrowRight className="w-4 h-4" />
             </button>
             <button
-              onClick={() => onSelectRole('CITIZEN', 'Citizen User', selectedLocation)}
+              onClick={() => setShowCitizenModal(true)}
               className="px-6 py-3.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-bold text-sm flex items-center gap-2 border border-white/20 backdrop-blur-xs transition-all cursor-pointer"
             >
               <Users className="w-4 h-4 text-emerald-400" />
@@ -1262,12 +1315,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               </span>
               <ul className="space-y-1.5 text-xs text-slate-600">
                 <li>
-                  <button onClick={() => onSelectRole('ADMIN', selectedOfficer, selectedLocation)} className="hover:text-blue-600 font-semibold cursor-pointer">
+                  <button onClick={() => setShowAuthorityModal(true)} className="hover:text-blue-600 font-semibold cursor-pointer">
                     Disaster Authority EOC Command &rarr;
                   </button>
                 </li>
                 <li>
-                  <button onClick={() => onSelectRole('CITIZEN', 'Citizen User', selectedLocation)} className="hover:text-emerald-700 font-semibold cursor-pointer">
+                  <button onClick={() => setShowCitizenModal(true)} className="hover:text-emerald-700 font-semibold cursor-pointer">
                     Citizen Public Safety Portal &rarr;
                   </button>
                 </li>
@@ -1316,6 +1369,223 @@ export const LandingPage: React.FC<LandingPageProps> = ({
 
         </div>
       </footer>
+
+      {/* ========================================================================= */}
+      {/* 2. AUTHORITY LOGIN MODAL (Section 2)                                      */}
+      {/* ========================================================================= */}
+      {showAuthorityModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in">
+          <div 
+            className="w-full max-w-md bg-white border border-slate-200 rounded-3xl shadow-2xl p-6 sm:p-8 text-slate-800 relative overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-xs">
+                  <Shield className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-black text-slate-900">Authority Login</h3>
+                  <p className="text-[11px] text-slate-500">Decision Support &bull; EOC Command</p>
+                </div>
+              </div>
+              <span className="px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-700 font-mono text-[10px] font-bold border border-amber-200">
+                DEMO ENVIRONMENT
+              </span>
+            </div>
+
+            {/* Demo Credentials Box */}
+            <div className="p-3 rounded-2xl bg-blue-50/70 border border-blue-200/80 mb-5 text-xs">
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="font-bold text-blue-900 font-mono text-[11px]">Optional Demo Credentials:</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setOfficerId('admin');
+                    setOfficerPassword('demo123');
+                  }}
+                  className="text-[10px] text-blue-700 hover:underline font-bold cursor-pointer"
+                >
+                  Use Demo Credentials
+                </button>
+              </div>
+              <div className="grid grid-cols-2 gap-2 font-mono text-[11px] text-slate-700">
+                <div>Officer ID: <strong className="text-slate-900">admin</strong></div>
+                <div>Password: <strong className="text-slate-900">demo123</strong></div>
+              </div>
+            </div>
+
+            {/* Login Form */}
+            <form onSubmit={handleAuthoritySignIn} className="space-y-4 text-xs">
+              {loginError && (
+                <div className="p-2.5 rounded-xl bg-rose-50 text-rose-700 border border-rose-200 font-medium">
+                  {loginError}
+                </div>
+              )}
+
+              <div>
+                <label className="block text-slate-700 font-semibold mb-1">Officer ID:</label>
+                <input
+                  type="text"
+                  value={officerId}
+                  onChange={(e) => setOfficerId(e.target.value)}
+                  placeholder="admin"
+                  required
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 font-mono focus:outline-none focus:border-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-slate-700 font-semibold mb-1">Password:</label>
+                <input
+                  type="password"
+                  value={officerPassword}
+                  onChange={(e) => setOfficerPassword(e.target.value)}
+                  placeholder="demo123"
+                  required
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 font-mono focus:outline-none focus:border-blue-500"
+                />
+              </div>
+
+              {/* Profile Designation */}
+              <div>
+                <label className="block text-slate-700 font-semibold mb-1">Command Officer Profile:</label>
+                <select
+                  value={selectedOfficer}
+                  onChange={(e) => {
+                    const off = demoOfficers.find(o => o.name === e.target.value);
+                    if (off) handleOfficerSelect(off);
+                  }}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 font-semibold focus:outline-none cursor-pointer"
+                >
+                  {demoOfficers.map((o) => (
+                    <option key={o.name} value={o.name}>
+                      {o.name} — {o.designation.split('(')[0]}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Coastal District */}
+              <div>
+                <label className="block text-slate-700 font-semibold mb-1">Coastal District:</label>
+                <select
+                  value={selectedLocation}
+                  onChange={(e) => onLocationChange(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 font-semibold focus:outline-none cursor-pointer"
+                >
+                  {LOCATION_OPTIONS.map((loc) => (
+                    <option key={loc} value={loc}>
+                      {loc}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="pt-2 space-y-2">
+                <button
+                  type="submit"
+                  className="w-full py-3 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center justify-center gap-2 cursor-pointer shadow-md transition-colors"
+                >
+                  <span>Sign In</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setShowAuthorityModal(false)}
+                  className="w-full py-2.5 rounded-2xl text-slate-600 hover:bg-slate-100 font-semibold text-xs transition-colors cursor-pointer"
+                >
+                  &larr; Back to PRAVAH AI
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* 3. CITIZEN LOGIN MODAL (Section 3)                                        */}
+      {/* ========================================================================= */}
+      {showCitizenModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in">
+          <div 
+            className="w-full max-w-md bg-white border border-slate-200 rounded-3xl shadow-2xl p-6 sm:p-8 text-slate-800 relative overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-emerald-600 flex items-center justify-center text-white shadow-xs">
+                  <Users className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-black text-slate-900">Citizen Safety Portal</h3>
+                  <p className="text-[11px] text-slate-500">Public Evacuation &amp; Verified Shelters</p>
+                </div>
+              </div>
+              <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-mono text-[10px] font-bold border border-emerald-200">
+                PUBLIC ACCESS
+              </span>
+            </div>
+
+            <p className="text-xs text-slate-600 mb-5 leading-relaxed">
+              Access real-time cyclone landfall timers, nearest verified cyclone shelters with food and power, and flood-safe evacuation routes for your family.
+            </p>
+
+            {/* Citizen Form */}
+            <form onSubmit={handleCitizenContinue} className="space-y-4 text-xs">
+              <div>
+                <label className="block text-slate-700 font-semibold mb-1">Your Name / Demo ID:</label>
+                <input
+                  type="text"
+                  value={citizenName}
+                  onChange={(e) => setCitizenName(e.target.value)}
+                  placeholder="Citizen User"
+                  required
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-emerald-500 font-medium"
+                />
+              </div>
+
+              <div>
+                <label className="block text-slate-700 font-semibold mb-1">Your Location / Coastal District:</label>
+                <select
+                  value={selectedLocation}
+                  onChange={(e) => onLocationChange(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 font-semibold focus:outline-none cursor-pointer"
+                >
+                  {LOCATION_OPTIONS.map((loc) => (
+                    <option key={loc} value={loc}>
+                      {loc}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="pt-2 space-y-2">
+                <button
+                  type="submit"
+                  className="w-full py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-2 cursor-pointer shadow-md transition-colors"
+                >
+                  <span>Continue</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setShowCitizenModal(false)}
+                  className="w-full py-2.5 rounded-2xl text-slate-600 hover:bg-slate-100 font-semibold text-xs transition-colors cursor-pointer"
+                >
+                  &larr; Back to PRAVAH AI
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

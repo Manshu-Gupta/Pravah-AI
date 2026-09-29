@@ -37,6 +37,13 @@ export interface LocationConfig {
   };
   surgePolygon: [number, number][];
   floodPolygon: [number, number][];
+  towns?: { name: string; lat: number; lng: number }[];
+  hazardPolygons?: {
+    criticalRisk?: [number, number][]; // RED zone
+    highRisk?: [number, number][];     // ORANGE zone
+    moderateRisk?: [number, number][]; // YELLOW zone
+    inundation?: [number, number][];   // BLUE zone
+  };
   roads: RoadSegment[];
   assets: InfrastructureAsset[];
   damageChains: DamageChain[];
@@ -185,6 +192,46 @@ export const EAST_GODAVARI_DATA: LocationConfig = {
     [17.02, 82.30],
     [16.88, 82.18],
   ],
+  towns: [
+    { name: 'Kakinada Port', lat: 16.989, lng: 82.247 },
+    { name: 'Uppada Beach', lat: 17.065, lng: 82.315 },
+    { name: 'Samalkota', lat: 17.050, lng: 82.169 },
+    { name: 'Pithapuram', lat: 17.116, lng: 82.259 },
+    { name: 'Yanam', lat: 16.732, lng: 82.217 },
+  ],
+  hazardPolygons: {
+    criticalRisk: [
+      [16.90, 82.25],
+      [17.02, 82.30],
+      [17.15, 82.38],
+      [17.10, 82.26],
+      [16.95, 82.21],
+    ],
+    highRisk: [
+      [16.85, 82.18],
+      [17.00, 82.22],
+      [17.18, 82.32],
+      [17.22, 82.20],
+      [17.05, 82.12],
+      [16.88, 82.14],
+    ],
+    moderateRisk: [
+      [16.78, 82.10],
+      [16.95, 82.14],
+      [17.25, 82.25],
+      [17.30, 82.10],
+      [17.10, 82.02],
+      [16.80, 82.05],
+    ],
+    inundation: [
+      [16.85, 82.22],
+      [16.94, 82.27],
+      [17.08, 82.32],
+      [17.18, 82.38],
+      [17.10, 82.28],
+      [16.95, 82.20],
+    ],
+  },
   roads: [
     {
       id: 'EG-R1',
@@ -518,6 +565,47 @@ export const PURI_DATA: LocationConfig = {
     [19.95, 85.90],
     [19.88, 85.78],
   ],
+  towns: [
+    { name: 'Bhubaneswar', lat: 20.296, lng: 85.824 },
+    { name: 'Puri', lat: 19.813, lng: 85.831 },
+    { name: 'Konark', lat: 19.887, lng: 86.094 },
+    { name: 'Brahmapur', lat: 19.314, lng: 84.794 },
+    { name: 'Nimapada', lat: 19.952, lng: 86.012 },
+  ],
+  hazardPolygons: {
+    criticalRisk: [
+      [19.72, 85.75],
+      [19.82, 85.86],
+      [19.92, 86.08],
+      [20.02, 86.20],
+      [19.92, 85.95],
+      [19.78, 85.76],
+    ],
+    highRisk: [
+      [19.65, 85.65],
+      [19.80, 85.78],
+      [19.98, 86.12],
+      [20.12, 86.25],
+      [20.02, 85.85],
+      [19.72, 85.60],
+    ],
+    moderateRisk: [
+      [19.55, 85.50],
+      [19.75, 85.65],
+      [20.05, 86.15],
+      [20.25, 86.20],
+      [20.15, 85.70],
+      [19.65, 85.45],
+    ],
+    inundation: [
+      [19.75, 85.78],
+      [19.82, 85.86],
+      [19.88, 86.02],
+      [19.98, 86.15],
+      [19.89, 85.95],
+      [19.78, 85.80],
+    ],
+  },
   roads: [
     {
       id: 'PURI-R1',
@@ -808,6 +896,42 @@ export const KENDRAPARA_DATA: LocationConfig = {
     [20.40, 86.70],
     [20.20, 86.45],
   ],
+  towns: [
+    { name: 'Kendrapara', lat: 20.505, lng: 86.422 },
+    { name: 'Pattamundai', lat: 20.574, lng: 86.568 },
+    { name: 'Ersama', lat: 20.210, lng: 86.460 },
+    { name: 'Paradip Port', lat: 20.316, lng: 86.611 },
+  ],
+  hazardPolygons: {
+    criticalRisk: [
+      [20.35, 86.50],
+      [20.50, 86.75],
+      [20.65, 86.95],
+      [20.55, 86.65],
+      [20.40, 86.45],
+    ],
+    highRisk: [
+      [20.25, 86.40],
+      [20.45, 86.65],
+      [20.75, 87.05],
+      [20.65, 86.50],
+      [20.30, 86.35],
+    ],
+    moderateRisk: [
+      [20.15, 86.30],
+      [20.38, 86.55],
+      [20.85, 87.15],
+      [20.75, 86.40],
+      [20.20, 86.25],
+    ],
+    inundation: [
+      [20.30, 86.48],
+      [20.48, 86.72],
+      [20.62, 86.90],
+      [20.52, 86.62],
+      [20.38, 86.42],
+    ],
+  },
   roads: [
     {
       id: 'R-17',
@@ -1097,6 +1221,42 @@ export const VISAKHAPATNAM_DATA: LocationConfig = {
     [17.80, 83.25],
     [17.72, 83.08],
   ],
+  towns: [
+    { name: 'Visakhapatnam', lat: 17.686, lng: 83.218 },
+    { name: 'Bheemunipatnam', lat: 17.891, lng: 83.454 },
+    { name: 'Gajuwaka', lat: 17.695, lng: 83.210 },
+    { name: 'Anakapalle', lat: 17.691, lng: 83.004 },
+  ],
+  hazardPolygons: {
+    criticalRisk: [
+      [17.62, 83.20],
+      [17.70, 83.32],
+      [17.85, 83.45],
+      [17.80, 83.35],
+      [17.66, 83.22],
+    ],
+    highRisk: [
+      [17.55, 83.12],
+      [17.68, 83.28],
+      [17.92, 83.52],
+      [17.90, 83.25],
+      [17.60, 83.10],
+    ],
+    moderateRisk: [
+      [17.48, 83.05],
+      [17.62, 83.20],
+      [17.98, 83.55],
+      [17.95, 83.15],
+      [17.52, 83.00],
+    ],
+    inundation: [
+      [17.60, 83.18],
+      [17.68, 83.30],
+      [17.82, 83.42],
+      [17.75, 83.32],
+      [17.62, 83.20],
+    ],
+  },
   roads: [
     {
       id: 'VZ-R1',
@@ -1383,6 +1543,42 @@ export const PARADIP_DATA: LocationConfig = {
     [20.40, 86.65],
     [20.32, 86.42],
   ],
+  towns: [
+    { name: 'Paradip Port', lat: 20.316, lng: 86.611 },
+    { name: 'Nuagarh', lat: 20.340, lng: 86.630 },
+    { name: 'Kujang', lat: 20.301, lng: 86.532 },
+    { name: 'Ersama', lat: 20.210, lng: 86.460 },
+  ],
+  hazardPolygons: {
+    criticalRisk: [
+      [20.22, 86.55],
+      [20.32, 86.68],
+      [20.45, 86.85],
+      [20.40, 86.62],
+      [20.28, 86.50],
+    ],
+    highRisk: [
+      [20.15, 86.45],
+      [20.28, 86.60],
+      [20.52, 86.92],
+      [20.48, 86.52],
+      [20.20, 86.40],
+    ],
+    moderateRisk: [
+      [20.08, 86.35],
+      [20.22, 86.52],
+      [20.60, 87.00],
+      [20.55, 86.42],
+      [20.12, 86.30],
+    ],
+    inundation: [
+      [20.20, 86.52],
+      [20.30, 86.65],
+      [20.42, 86.80],
+      [20.38, 86.58],
+      [20.25, 86.48],
+    ],
+  },
   roads: [
     {
       id: 'PDP-R1',
@@ -1671,6 +1867,48 @@ export const ODISHA_CORRIDOR_DATA: LocationConfig = {
     [20.60, 86.10],
     [20.10, 85.75],
   ],
+  towns: [
+    { name: 'Bhubaneswar', lat: 20.296, lng: 85.824 },
+    { name: 'Cuttack', lat: 20.462, lng: 85.882 },
+    { name: 'Puri', lat: 19.813, lng: 85.831 },
+    { name: 'Konark', lat: 19.887, lng: 86.094 },
+    { name: 'Paradip Port', lat: 20.316, lng: 86.611 },
+    { name: 'Brahmapur', lat: 19.314, lng: 84.794 },
+  ],
+  hazardPolygons: {
+    criticalRisk: [
+      [19.80, 85.85],
+      [20.10, 86.30],
+      [20.35, 86.65],
+      [20.50, 86.75],
+      [20.35, 86.35],
+      [19.95, 85.95],
+    ],
+    highRisk: [
+      [19.65, 85.70],
+      [20.00, 86.15],
+      [20.45, 86.70],
+      [20.65, 86.80],
+      [20.45, 86.20],
+      [19.80, 85.75],
+    ],
+    moderateRisk: [
+      [19.50, 85.55],
+      [19.90, 86.00],
+      [20.55, 86.75],
+      [20.80, 86.80],
+      [20.55, 86.05],
+      [19.65, 85.55],
+    ],
+    inundation: [
+      [19.80, 85.85],
+      [20.10, 86.30],
+      [20.35, 86.65],
+      [20.55, 86.85],
+      [20.40, 86.40],
+      [20.00, 86.00],
+    ],
+  },
   roads: [
     {
       id: 'COR-R1',

@@ -1,21 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   LayoutDashboard, 
   Map, 
   Building2, 
-  GitFork, 
   Clock, 
+  Compass, 
+  GitFork, 
   Sparkles, 
   SlidersHorizontal, 
-  History,
-  Shield,
-  HelpCircle,
-  Compass,
-  FileText,
-  Settings,
-  HelpCircle as GuideIcon,
+  FileText, 
+  Settings, 
   LogOut,
-  UserCheck
+  X,
+  Sliders,
+  Check
 } from 'lucide-react';
 import { UserRole } from '../types';
 
@@ -23,12 +21,12 @@ export type NavigationTab =
   | 'overview' 
   | 'hazard-map' 
   | 'infrastructure' 
-  | 'damage-chain' 
   | 'action-plan' 
   | 'evacuation-routes' 
   | 'shelters' 
-  | 'what-if' 
+  | 'damage-chain' 
   | 'advisories' 
+  | 'what-if' 
   | 'reports';
 
 interface SidebarProps {
@@ -37,6 +35,7 @@ interface SidebarProps {
   onOpenAssetDetailById?: (id: string) => void;
   userRole: UserRole;
   officerName: string;
+  onLogout?: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -44,159 +43,192 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onTabChange,
   userRole,
   officerName,
+  onLogout,
 }) => {
-  const navItems = [
+  const [showSettingsModal, setShowSettingsModal] = useState<boolean>(false);
+
+  const sections = [
     {
-      id: 'overview' as NavigationTab,
-      label: 'Dashboard',
-      icon: LayoutDashboard,
-      badge: 'Live',
+      group: 'MAIN',
+      items: [
+        { id: 'overview' as NavigationTab, label: 'Dashboard', icon: LayoutDashboard },
+        { id: 'hazard-map' as NavigationTab, label: 'Hazard Map', icon: Map },
+        { id: 'infrastructure' as NavigationTab, label: 'Infrastructure', icon: Building2 },
+      ]
     },
     {
-      id: 'hazard-map' as NavigationTab,
-      label: 'Hazard Map',
-      icon: Map,
-      badge: 'GIS',
+      group: 'RESPONSE',
+      items: [
+        { id: 'action-plan' as NavigationTab, label: 'Action Plan', icon: Clock },
+        { id: 'evacuation-routes' as NavigationTab, label: 'Evacuation Routes', icon: Compass },
+        { id: 'shelters' as NavigationTab, label: 'Shelters', icon: Building2 },
+      ]
     },
     {
-      id: 'infrastructure' as NavigationTab,
-      label: 'Infrastructure',
-      icon: Building2,
-      badge: '32',
+      group: 'INTELLIGENCE',
+      items: [
+        { id: 'damage-chain' as NavigationTab, label: 'Damage Chain', icon: GitFork },
+        { id: 'advisories' as NavigationTab, label: 'AI Advisories', icon: Sparkles },
+      ]
     },
     {
-      id: 'damage-chain' as NavigationTab,
-      label: 'Damage Chain',
-      icon: GitFork,
-      badge: 'Key',
-    },
-    {
-      id: 'action-plan' as NavigationTab,
-      label: 'Action Plan',
-      icon: Clock,
-      badge: 'T-18h',
-    },
-    {
-      id: 'evacuation-routes' as NavigationTab,
-      label: 'Evacuation Routes',
-      icon: Compass,
-      badge: 'R17/R21',
-    },
-    {
-      id: 'shelters' as NavigationTab,
-      label: 'Shelters',
-      icon: Building2,
-      badge: '8 Sites',
-    },
-    {
-      id: 'what-if' as NavigationTab,
-      label: 'What-if Simulator',
-      icon: SlidersHorizontal,
-      badge: 'Stress',
-    },
-    {
-      id: 'advisories' as NavigationTab,
-      label: 'AI Advisories',
-      icon: Sparkles,
-      badge: 'Gemini',
-    },
-    {
-      id: 'reports' as NavigationTab,
-      label: 'Reports',
-      icon: FileText,
-      badge: 'Export',
+      group: 'ANALYSIS',
+      items: [
+        { id: 'what-if' as NavigationTab, label: 'What-If', icon: SlidersHorizontal },
+        { id: 'reports' as NavigationTab, label: 'Reports', icon: FileText },
+      ]
     },
   ];
 
+  const getIconTint = (id: NavigationTab, isActive: boolean) => {
+    switch (id) {
+      case 'overview':
+        return isActive ? 'bg-blue-100 text-[#1677FF] shadow-xs' : 'bg-blue-50/80 text-blue-600';
+      case 'hazard-map':
+        return isActive ? 'bg-rose-100 text-rose-600 shadow-xs' : 'bg-rose-50/80 text-rose-600';
+      case 'infrastructure':
+        return isActive ? 'bg-sky-100 text-sky-600 shadow-xs' : 'bg-sky-50/80 text-sky-600';
+      case 'action-plan':
+        return isActive ? 'bg-amber-100 text-amber-600 shadow-xs' : 'bg-amber-50/80 text-amber-600';
+      case 'evacuation-routes':
+        return isActive ? 'bg-emerald-100 text-[#18A66A] shadow-xs' : 'bg-emerald-50/80 text-emerald-600';
+      case 'shelters':
+        return isActive ? 'bg-teal-100 text-teal-600 shadow-xs' : 'bg-teal-50/80 text-teal-600';
+      case 'damage-chain':
+        return isActive ? 'bg-purple-100 text-purple-600 shadow-xs' : 'bg-purple-50/80 text-purple-600';
+      case 'advisories':
+        return isActive ? 'bg-violet-100 text-[#7C3AED] shadow-xs' : 'bg-violet-50/80 text-violet-600';
+      case 'what-if':
+        return isActive ? 'bg-indigo-100 text-indigo-600 shadow-xs' : 'bg-indigo-50/80 text-indigo-600';
+      case 'reports':
+        return isActive ? 'bg-slate-200 text-slate-800 shadow-xs' : 'bg-slate-100 text-slate-600';
+      default:
+        return 'bg-blue-50 text-blue-600';
+    }
+  };
+
   return (
-    <aside className="w-full md:w-60 bg-white border-r border-slate-200/80 flex flex-col shrink-0">
-      {/* Navigation list */}
-      <div className="p-4 space-y-6 flex-1 overflow-y-auto">
-        {/* Menu Section */}
-        <div>
-          <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-3 mb-2">
-            Menu
-          </div>
+    <>
+      <aside className="w-full md:w-56 pravah-sidebar-surface flex flex-col shrink-0 select-none">
+        <div className="p-3 space-y-4 flex-1 overflow-y-auto">
+          {sections.map((sec) => (
+            <div key={sec.group}>
+              <div className="text-[10px] font-mono font-bold text-[#607D94] uppercase tracking-wider px-2.5 mb-1.5">
+                {sec.group}
+              </div>
 
-          <div className="space-y-1">
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = activeTab === item.id;
-              return (
+              <div className="space-y-1">
+                {sec.items.map((item) => {
+                  const Icon = item.icon;
+                  const isActive = activeTab === item.id;
+                  const tintClass = getIconTint(item.id, isActive);
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => onTabChange(item.id)}
+                      style={isActive ? {
+                        background: 'linear-gradient(90deg, #E5F3FF 0%, #F2FAFD 100%)',
+                        borderLeft: '3px solid #1677FF',
+                      } : undefined}
+                      className={`w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-xl text-xs transition-all cursor-pointer ${
+                        isActive
+                          ? 'text-[#1677FF] font-bold shadow-2xs'
+                          : 'text-[#102A43] hover:text-[#1677FF] hover:bg-white/80 font-medium'
+                      }`}
+                    >
+                      <div className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 transition-transform ${tintClass} ${isActive ? 'scale-105 ring-2 ring-blue-400/20' : ''}`}>
+                        <Icon className="w-3.5 h-3.5" />
+                      </div>
+                      <span className="truncate">{item.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+
+          {/* SYSTEM section */}
+          <div>
+            <div className="text-[10px] font-mono font-bold text-[#607D94] uppercase tracking-wider px-2.5 mb-1.5">
+              SYSTEM
+            </div>
+            <div className="space-y-1">
+              <button
+                onClick={() => setShowSettingsModal(true)}
+                className="w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-xl text-xs text-[#102A43] hover:text-blue-600 hover:bg-white/80 font-medium transition-all cursor-pointer"
+              >
+                <div className="w-6 h-6 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center shrink-0">
+                  <Settings className="w-3.5 h-3.5" />
+                </div>
+                <span>Settings</span>
+              </button>
+              {onLogout && (
                 <button
-                  key={item.id}
-                  onClick={() => onTabChange(item.id)}
-                  className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-left transition-all cursor-pointer ${
-                    isActive
-                      ? 'bg-slate-100 text-slate-900 font-bold shadow-xs'
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50 font-medium'
-                  }`}
+                  onClick={onLogout}
+                  className="w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-xl text-xs text-rose-600 hover:bg-rose-50 font-medium transition-all cursor-pointer"
                 >
-                  <div className="flex items-center gap-3 min-w-0">
-                    <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-blue-600' : 'text-slate-400'}`} />
-                    <span className="text-xs truncate">{item.label}</span>
+                  <div className="w-6 h-6 rounded-lg bg-rose-100/70 text-rose-600 flex items-center justify-center shrink-0">
+                    <LogOut className="w-3.5 h-3.5" />
                   </div>
-
-                  {item.badge && (
-                    <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded-md font-semibold border ${
-                      isActive
-                        ? 'bg-blue-50 text-blue-700 border-blue-200'
-                        : 'bg-slate-50 text-slate-400 border-slate-200'
-                    }`}>
-                      {item.badge}
-                    </span>
-                  )}
+                  <span>Logout</span>
                 </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Support Section */}
-        <div>
-          <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-3 mb-2">
-            Support
-          </div>
-          <div className="space-y-1">
-            <button
-              onClick={() => onTabChange('reports')}
-              className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors cursor-pointer"
-            >
-              <GuideIcon className="w-4 h-4 text-slate-400" />
-              <span>Operational Guide</span>
-            </button>
-            <button
-              onClick={() => onTabChange('reports')}
-              className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors cursor-pointer"
-            >
-              <Settings className="w-4 h-4 text-slate-400" />
-              <span>Command Settings</span>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* User Profile Card at Bottom (Like reference UI) */}
-      <div className="p-4 border-t border-slate-100 bg-slate-50/60">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full bg-blue-100 border border-blue-200 flex items-center justify-center text-blue-700 font-bold text-xs shrink-0">
-            {officerName.split(' ').map(n => n[0]).join('').slice(0, 2)}
-          </div>
-          <div className="min-w-0 flex-1">
-            <div className="text-xs font-bold text-slate-900 truncate">
-              {officerName}
-            </div>
-            <div className="text-[10px] text-slate-500 font-mono truncate">
-              {userRole === 'ADMIN' ? 'Authority Officer' : 'Public Resident'}
+              )}
             </div>
           </div>
         </div>
 
-        <div className="mt-2.5 pt-2 border-t border-slate-200/80 flex items-center justify-between text-[10px] text-slate-500 font-mono">
-          <span>ROLE: {userRole}</span>
-          <span className="text-emerald-600 font-bold">AUTHENTICATED</span>
+        {/* Bottom Officer Status Badge */}
+        <div className="p-3 border-t border-[#DCEAF3] bg-white/40 text-[11px]">
+          <div className="font-bold text-[#102A43] truncate">{officerName}</div>
+          <div className="text-[10px] text-[#607D94] font-mono">Disaster Authority EOC</div>
         </div>
-      </div>
-    </aside>
+      </aside>
+
+      {/* Settings Modal Dialog */}
+      {showSettingsModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs animate-in fade-in">
+          <div className="w-full max-w-sm bg-white rounded-3xl p-6 border border-slate-200 shadow-2xl relative">
+            <button
+              onClick={() => setShowSettingsModal(false)}
+              className="absolute top-4 right-4 p-1 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 cursor-pointer"
+            >
+              <X className="w-4 h-4" />
+            </button>
+            <div className="flex items-center gap-2.5 mb-4">
+              <div className="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                <Settings className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-slate-900">System Preferences</h3>
+                <p className="text-[11px] text-slate-500">PRAVAH AI Command Console</p>
+              </div>
+            </div>
+
+            <div className="space-y-3 text-xs text-slate-700">
+              <div className="p-3 bg-slate-50 rounded-2xl border border-slate-100 space-y-2">
+                <div className="font-bold text-slate-900">Telemetry Refresh</div>
+                <div className="text-slate-500 text-[11px]">Ensemble weather simulation runs every 5 minutes automatically.</div>
+                <div className="flex items-center gap-1.5 text-emerald-600 font-semibold text-[11px]">
+                  <Check className="w-3.5 h-3.5" />
+                  Real-time synchronization active
+                </div>
+              </div>
+
+              <div className="p-3 bg-slate-50 rounded-2xl border border-slate-100 space-y-1">
+                <div className="font-bold text-slate-900">GIS Engine</div>
+                <div className="text-slate-500 text-[11px]">Leaflet vector pipeline with dynamic hazard isohyets.</div>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setShowSettingsModal(false)}
+              className="mt-5 w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs cursor-pointer shadow-xs"
+            >
+              Done
+            </button>
+          </div>
+        </div>
+      )}
+    </>
   );
 };

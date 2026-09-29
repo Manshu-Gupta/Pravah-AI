@@ -53,3 +53,47 @@
   }
 }
 
+/* PRAVAH AI Design System Styles */
+.pravah-bg-atmosphere {
+  background: linear-gradient(135deg, #F7FAFC 0%, #EEF7FA 50%, #F8FBFD 100%);
+  background-attachment: fixed;
+}
+
+.pravah-header-surface {
+  background: linear-gradient(90deg, #F7FBFF 0%, #EEF8FB 60%, #FFFFFF 100%);
+  border-bottom: 1px solid #DCEAF3;
+}
+
+.pravah-sidebar-surface {
+  background: linear-gradient(180deg, #F8FBFE 0%, #F1F7FB 100%);
+  border-right: 1px solid #DCEAF3;
+}
+
+.pravah-card {
+  background: linear-gradient(145deg, #FFFFFF 0%, #F5FAFD 100%);
+  border: 1px solid #DCEAF3;
+  box-shadow: 0 4px 18px rgba(20, 80, 120, 0.06);
+  transition: all 0.2s ease;
+}
+
+.pravah-card:hover {
+  box-shadow: 0 6px 22px rgba(20, 80, 120, 0.09);
+  border-color: #c8e0f0;
+}
+
+.pravah-overlay-panel {
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(150, 190, 210, 0.45);
+  box-shadow: 0 6px 20px rgba(0, 70, 110, 0.12);
+}
+
+.pravah-legend-panel {
+  background: rgba(255, 255, 255, 0.93);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid #D7E8F2;
+  box-shadow: 0 6px 20px rgba(0, 70, 110, 0.12);
+}
+

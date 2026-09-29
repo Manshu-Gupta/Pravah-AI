@@ -2,7 +2,6 @@ import React, { useState, useMemo } from 'react';
 import { Header } from './components/Header';
 import { Sidebar, NavigationTab } from './components/Sidebar';
 import { AssetDetailModal } from './components/AssetDetailModal';
-import { LoginModal } from './components/LoginModal';
 import { LandingPage } from './components/LandingPage';
 
 import { OverviewView } from './components/views/OverviewView';
@@ -44,7 +43,6 @@ export default function App() {
   
   // Officer Profile
   const [officerName, setOfficerName] = useState<string>('Officer S. Patnaik');
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
 
   // Selected asset for modal inspector
   const [selectedAssetForModal, setSelectedAssetForModal] = useState<InfrastructureAsset | null>(null);
@@ -197,7 +195,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F7F8FA] text-slate-800 flex flex-col font-sans selection:bg-blue-600 selection:text-white">
+    <div className="min-h-screen pravah-bg-atmosphere text-[#102A43] flex flex-col font-sans selection:bg-blue-600 selection:text-white">
       {/* Enterprise Header with no role switch toggle, but with location, scenario, sector filters, and logout */}
       <Header
         currentScenarioKey={currentScenarioKey}
@@ -225,6 +223,7 @@ export default function App() {
               onOpenAssetDetailById={handleOpenAssetDetailById}
               userRole={userRole}
               officerName={officerName}
+              onLogout={handleLogout}
             />
 
             {/* Viewport Content Area */}

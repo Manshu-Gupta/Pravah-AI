@@ -1,28 +1,21 @@
 import React, { useState } from 'react';
 import { 
   Wind, 
-  Bell, 
   ChevronDown, 
   MapPin, 
-  Shield,
-  ShieldAlert, 
+  Shield, 
   User, 
-  ExternalLink,
-  Flame,
-  Radio,
-  Clock,
-  Sparkles,
-  Users,
-  Building2,
-  CheckCircle2,
+  SlidersHorizontal, 
   LogOut,
-  Home,
-  SlidersHorizontal,
   Layers,
   HeartPulse,
   Zap,
   Truck,
-  Building
+  Building,
+  CheckCircle2,
+  Building2,
+  Clock,
+  Waves
 } from 'lucide-react';
 import { UserRole, DepartmentType } from '../types';
 import { SCENARIO_CONFIGS, LOCATION_OPTIONS } from '../data/locationDatasets';
@@ -53,57 +46,52 @@ export const Header: React.FC<HeaderProps> = ({
   onLocationChange,
   onLogout,
   windSpeedText = '120 km/h',
-  surgeText = '2.8m',
-  landfallText = '18 hrs',
+  surgeText = 'HIGH',
+  landfallText = '18 hours',
 }) => {
-  const [showNotifications, setShowNotifications] = useState(false);
-  const [notifications] = useState([
-    {
-      id: 1,
-      title: 'Road R17 Inundation Warning',
-      time: '14m ago',
-      desc: 'Projected flood depth 1.2m. 53% local population dependent. Alternate corridor R21 engaged.',
-      priority: 'high',
-    },
-    {
-      id: 2,
-      title: 'Substation P-03 Sump Pump Activated',
-      time: '32m ago',
-      desc: 'Basement water sensor 2 tripped. Secondary feed secured for District Hospital H-07.',
-      priority: 'critical',
-    },
-    {
-      id: 3,
-      title: 'Shelter S-04 Provision Staging',
-      time: '45m ago',
-      desc: 'Emergency food packets and 500L diesel fuel reserves logged as verified by Block Development Officer.',
-      priority: 'normal',
-    },
-  ]);
-
-  const departments: { key: DepartmentType; label: string; icon: React.ReactNode }[] = [
-    { key: 'ALL', label: 'ALL SECTORS', icon: <Layers className="w-3.5 h-3.5" /> },
-    { key: 'DISASTER MANAGEMENT', label: 'COMMAND & SHELTERS', icon: <Building2 className="w-3.5 h-3.5" /> },
-    { key: 'HEALTH', label: 'HEALTH & HOSPITALS', icon: <HeartPulse className="w-3.5 h-3.5" /> },
-    { key: 'POWER', label: 'POWER GRID', icon: <Zap className="w-3.5 h-3.5" /> },
-    { key: 'ROADS', label: 'ROADS & EVACUATION', icon: <Truck className="w-3.5 h-3.5" /> },
-    { key: 'MUNICIPAL', label: 'MUNICIPAL & DRAINAGE', icon: <Building className="w-3.5 h-3.5" /> },
+  const departments: { key: DepartmentType; label: string }[] = [
+    { key: 'ALL', label: 'All Sectors' },
+    { key: 'DISASTER MANAGEMENT', label: 'Disaster Management' },
+    { key: 'HEALTH', label: 'Health' },
+    { key: 'POWER', label: 'Power' },
+    { key: 'ROADS', label: 'Roads' },
+    { key: 'MUNICIPAL', label: 'Municipal' },
   ];
 
   return (
-    <header className="sticky top-0 z-40 bg-white border-b border-slate-200/90 shadow-xs">
-      {/* Top Meta Strip: Status, Metrics & Logout */}
-      <div className="max-w-[1720px] mx-auto px-4 sm:px-6 py-2 flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 text-xs">
-        {/* Left: Location & Scenario Selector */}
-        <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+    <header className="sticky top-0 z-40 pravah-header-surface shadow-xs">
+      <div className="max-w-[1720px] mx-auto px-4 sm:px-6 py-2.5 flex flex-wrap items-center justify-between gap-3 text-xs">
+        
+        {/* Left Section: Logo + Location + Scenario + Department + Statuses */}
+        <div className="flex items-center gap-3 sm:gap-4 flex-wrap">
+          {/* Brand Logo */}
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-700 to-blue-500 flex items-center justify-center text-white shadow-sm shadow-blue-500/25 shrink-0">
+              <Wind className="w-4 h-4 text-white" />
+            </div>
+            <div>
+              <div className="flex items-center gap-1.5">
+                <span className="text-base font-black text-[#102A43] tracking-tight">
+                  PRAVAH AI
+                </span>
+                <span className="hidden xl:inline-block px-2 py-0.5 rounded text-[9px] font-mono font-bold bg-blue-50 text-blue-700 border border-[#DCEAF3]">
+                  {userRole === 'ADMIN' ? 'EOC COMMAND' : 'CITIZEN'}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className="h-5 w-[1px] bg-[#DCEAF3] hidden sm:block"></div>
+
           {/* Location Selector */}
-          <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1 text-slate-700 hover:border-blue-400 transition-colors">
-            <MapPin className="w-3.5 h-3.5 text-blue-600 shrink-0" />
-            <span className="text-[10px] uppercase font-mono text-slate-400 font-semibold hidden sm:inline">District:</span>
+          <div className="flex items-center gap-1.5 bg-[#F0F6FB] border border-[#DCEAF3] rounded-xl px-2.5 py-1 text-[#102A43] hover:border-blue-400 hover:bg-white transition-all shadow-2xs">
+            <div className="w-5 h-5 rounded-lg bg-blue-100/70 flex items-center justify-center shrink-0">
+              <MapPin className="w-3 h-3 text-blue-600" />
+            </div>
             <select
               value={selectedLocation}
               onChange={(e) => onLocationChange(e.target.value)}
-              className="bg-transparent text-xs font-bold text-slate-800 focus:outline-none cursor-pointer pr-1"
+              className="bg-transparent text-xs font-bold text-[#102A43] focus:outline-none cursor-pointer pr-1"
             >
               {LOCATION_OPTIONS.map((loc) => (
                 <option key={loc} value={loc}>
@@ -114,13 +102,15 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
 
           {/* Scenario Selector */}
-          <div className="flex items-center gap-1 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1 text-slate-700 hover:border-blue-400 transition-colors">
-            <SlidersHorizontal className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-            <span className="text-[10px] uppercase font-mono text-slate-400 font-semibold">Scenario:</span>
+          <div className="flex items-center gap-1.5 bg-[#F0F6FB] border border-[#DCEAF3] rounded-xl px-2.5 py-1 text-[#102A43] hover:border-blue-400 hover:bg-white transition-all shadow-2xs">
+            <div className="w-5 h-5 rounded-lg bg-amber-100/70 flex items-center justify-center shrink-0">
+              <SlidersHorizontal className="w-3 h-3 text-amber-600" />
+            </div>
+            <span className="text-[10px] uppercase font-mono text-[#607D94] font-semibold hidden md:inline">Scenario:</span>
             <select
               value={currentScenarioKey}
               onChange={(e) => onScenarioChange(e.target.value)}
-              className="bg-transparent text-xs font-semibold text-slate-800 focus:outline-none cursor-pointer max-w-[200px] sm:max-w-none truncate"
+              className="bg-transparent text-xs font-semibold text-[#102A43] focus:outline-none cursor-pointer max-w-[170px] truncate"
             >
               {Object.entries(SCENARIO_CONFIGS).map(([key, item]) => (
                 <option key={key} value={key}>
@@ -130,160 +120,88 @@ export const Header: React.FC<HeaderProps> = ({
             </select>
           </div>
 
-          <span className="px-2 py-0.5 rounded-md bg-amber-50 text-amber-700 font-mono text-[10px] font-bold border border-amber-200 uppercase hidden md:inline-block">
-            {SCENARIO_CONFIGS[currentScenarioKey]?.badge || 'SIMULATED SCENARIO'}
-          </span>
+          {/* Department Filter (Compact Dropdown per Section 15) */}
+          {userRole === 'ADMIN' && (
+            <div className="flex items-center gap-1.5 bg-[#F0F6FB] border border-[#DCEAF3] rounded-xl px-2.5 py-1 text-[#102A43] hover:border-blue-400 hover:bg-white transition-all shadow-2xs">
+              <div className="w-5 h-5 rounded-lg bg-cyan-100/70 flex items-center justify-center shrink-0">
+                <Layers className="w-3 h-3 text-[#16B8C4]" />
+              </div>
+              <span className="text-[10px] uppercase font-mono text-[#607D94] font-semibold hidden lg:inline">Sector:</span>
+              <select
+                value={selectedDepartment}
+                onChange={(e) => onDepartmentChange(e.target.value as DepartmentType)}
+                className="bg-transparent text-xs font-semibold text-[#102A43] focus:outline-none cursor-pointer"
+              >
+                {departments.map((dept) => (
+                  <option key={dept.key} value={dept.key}>
+                    {dept.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {/* Telemetry Status Strip with understated colored dots */}
+          <div className="hidden 2xl:flex items-center gap-2 text-[11px] font-mono text-[#607D94] pl-1">
+            <span className="flex items-center gap-1.5 bg-[#F0F6FB] border border-[#DCEAF3] px-2 py-0.5 rounded-lg">
+              <span className="w-2 h-2 rounded-full bg-[#18A66A]"></span>
+              Weather Connected
+            </span>
+            <span className="flex items-center gap-1.5 bg-[#F0F6FB] border border-[#DCEAF3] px-2 py-0.5 rounded-lg">
+              <span className="w-2 h-2 rounded-full bg-[#16B8C4]"></span>
+              GEE Connected
+            </span>
+            <span className="flex items-center gap-1.5 bg-[#F0F6FB] border border-[#DCEAF3] px-2 py-0.5 rounded-lg">
+              <span className="w-2 h-2 rounded-full bg-[#7C3AED] animate-pulse"></span>
+              Gemini Active
+            </span>
+          </div>
         </div>
 
-        {/* Center: Live Meteorological Status Chips (Dynamically driven) */}
-        <div className="hidden xl:flex items-center gap-3 text-xs font-mono text-slate-600">
-          <div className="flex items-center gap-1.5 bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-200/80">
-            <Clock className="w-3.5 h-3.5 text-blue-600" />
-            <span>Expected Landfall: <strong className="text-slate-900">{landfallText}</strong></span>
-          </div>
-
-          <div className="flex items-center gap-1.5 bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-200/80">
-            <Wind className="w-3.5 h-3.5 text-amber-600" />
-            <span>Wind Speed: <strong className="text-slate-900">{windSpeedText}</strong></span>
-          </div>
-
-          <div className="flex items-center gap-1.5 bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-200/80">
-            <ShieldAlert className="w-3.5 h-3.5 text-rose-600" />
-            <span>Storm Surge Risk: <strong className="text-rose-600 font-bold">{surgeText}</strong></span>
-          </div>
-        </div>
-
-        {/* Right: Data Source Indicators & User / Home Logout */}
-        <div className="flex items-center gap-3">
-          {/* Data Source Status */}
-          <div className="hidden lg:flex items-center gap-3 text-[11px] font-mono text-slate-500">
-            <span className="flex items-center gap-1.5" title="IMD / ECMWF Simulated Ensemble">
-              <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-              Weather: <strong className="text-slate-700">LIVE</strong>
+        {/* Right Section: Meteorological Metrics + Profile + Logout */}
+        <div className="flex items-center gap-2.5 sm:gap-3">
+          {/* Meteorological Metrics Pill */}
+          <div className="hidden md:flex items-center gap-2 bg-[#F0F6FB] border border-[#DCEAF3] rounded-xl px-3 py-1 font-mono text-xs text-[#102A43] shadow-2xs">
+            <span className="font-bold text-[#102A43] flex items-center gap-1">
+              <Clock className="w-3 h-3 text-blue-600" />
+              T−{landfallText.replace('hours', '').replace('Hours', '').trim()}H
             </span>
-            <span className="flex items-center gap-1.5" title="Google Earth Engine DEM & Flood Change">
-              <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-              GEE: <strong className="text-slate-700">CONNECTED</strong>
+            <span className="text-[#DCEAF3]">|</span>
+            <span>
+              Wind: <strong className="text-amber-700">{windSpeedText}</strong>
             </span>
-            <span className="flex items-center gap-1.5" title="Gemini 3.8 Flash Advisory Copilot">
-              <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
-              Gemini AI: <strong className="text-slate-700">CONNECTED</strong>
+            <span className="text-[#DCEAF3]">|</span>
+            <span>
+              Surge: <strong className="text-rose-600">{surgeText.includes('m') ? surgeText : 'HIGH'}</strong>
             </span>
           </div>
 
-          {/* Officer / Role Badge */}
-          <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1">
+          {/* Profile Badge */}
+          <div className="flex items-center gap-2 bg-[#F0F6FB] border border-[#DCEAF3] rounded-xl px-2.5 py-1 shadow-2xs">
             <div className="w-6 h-6 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-xs">
-              {userRole === 'ADMIN' ? <Shield className="w-3.5 h-3.5" /> : <Users className="w-3.5 h-3.5" />}
+              <User className="w-3.5 h-3.5" />
             </div>
-            <div className="hidden sm:block text-left">
-              <div className="text-[11px] font-bold text-slate-800 leading-tight">
-                {userRole === 'ADMIN' ? officerName : 'Citizen Safety Portal'}
+            <div className="text-left">
+              <div className="text-[11px] font-bold text-[#102A43] leading-tight">
+                {userRole === 'ADMIN' ? officerName : 'Citizen'}
               </div>
-              <div className="text-[9px] font-mono text-slate-400 leading-tight">
-                {userRole === 'ADMIN' ? 'Role: Disaster Authority' : 'Public Evacuation User'}
+              <div className="text-[9px] font-mono text-[#607D94] leading-tight hidden sm:block">
+                {userRole === 'ADMIN' ? 'Authority Profile' : 'Public Safety'}
               </div>
             </div>
           </div>
 
-          {/* Back to Home / Logout Button */}
+          {/* Logout Button */}
           <button
             onClick={onLogout}
-            title="Return to Landing Page & Role Selector"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-rose-50 hover:border-rose-200 text-slate-700 hover:text-rose-700 text-xs font-semibold transition-all cursor-pointer shadow-2xs"
+            title="Log out and return to PRAVAH AI landing page"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[#DCEAF3] bg-white hover:bg-rose-50 hover:border-rose-200 text-[#102A43] hover:text-rose-700 text-xs font-bold transition-all cursor-pointer shadow-2xs"
           >
-            <LogOut className="w-3.5 h-3.5 text-slate-500 hover:text-rose-600" />
-            <span className="hidden sm:inline">Logout / Home</span>
+            <LogOut className="w-3.5 h-3.5 text-[#607D94] hover:text-rose-600" />
+            <span>Logout</span>
           </button>
-
-          {/* Notification Bell */}
-          <div className="relative">
-            <button
-              onClick={() => setShowNotifications(!showNotifications)}
-              className="p-1.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 transition-colors cursor-pointer relative"
-              title="Situation Notifications"
-            >
-              <Bell className="w-4 h-4" />
-              <span className="absolute top-1 right-1 w-2 h-2 bg-rose-500 rounded-full animate-ping"></span>
-              <span className="absolute top-1 right-1 w-2 h-2 bg-rose-500 rounded-full"></span>
-            </button>
-
-            {showNotifications && (
-              <div className="absolute right-0 mt-2 w-80 bg-white border border-slate-200 rounded-2xl shadow-xl p-4 z-50 animate-in fade-in">
-                <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-100">
-                  <span className="text-xs font-bold text-slate-800 uppercase tracking-wide">
-                    Live Situation Bulletins
-                  </span>
-                  <button
-                    onClick={() => setShowNotifications(false)}
-                    className="text-slate-400 hover:text-slate-700 text-xs cursor-pointer"
-                  >
-                    ✕
-                  </button>
-                </div>
-                <div className="space-y-2">
-                  {notifications.map((n) => (
-                    <div key={n.id} className="p-2 rounded-xl bg-slate-50 border border-slate-100 text-xs">
-                      <div className="font-semibold text-slate-900">{n.title}</div>
-                      <p className="text-[11px] text-slate-600 mt-0.5">{n.desc}</p>
-                      <span className="text-[10px] font-mono text-slate-400 mt-1 block">{n.time}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Main Bar: Brand & Functional Sector Filter Tabs */}
-      <div className="max-w-[1720px] mx-auto px-4 sm:px-6 py-2.5 flex flex-wrap items-center justify-between gap-4">
-        {/* Brand identity */}
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-sm shadow-blue-500/20 shrink-0">
-            <Wind className="w-5 h-5 text-white" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-lg font-black text-slate-900 tracking-tight">
-                PRAVAH AI
-              </span>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 font-bold border border-blue-200">
-                {userRole === 'ADMIN' ? 'DISASTER MANAGEMENT AUTHORITY' : 'PUBLIC SAFETY PORTAL'}
-              </span>
-            </div>
-            <p className="text-[11px] text-slate-500 font-medium">
-              Predict. Prepare. Protect. — AI-Powered Cyclone Impact & Infrastructure Intelligence
-            </p>
-          </div>
         </div>
 
-        {/* Sector Functional Filters (All, Disaster Management, Health, Power, Roads, Municipal) */}
-        {userRole === 'ADMIN' && (
-          <div className="flex items-center gap-1.5 overflow-x-auto py-1 scrollbar-none">
-            <span className="text-[11px] font-mono text-slate-400 uppercase tracking-wider mr-1 hidden sm:inline">
-              Sector:
-            </span>
-            {departments.map((dept) => {
-              const isSelected = selectedDepartment === dept.key;
-              return (
-                <button
-                  key={dept.key}
-                  onClick={() => onDepartmentChange(dept.key)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 shrink-0 ${
-                    isSelected
-                      ? 'bg-blue-600 text-white shadow-sm shadow-blue-500/20 ring-1 ring-blue-700'
-                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900'
-                  }`}
-                  title={`Filter map, assets, and action items for ${dept.label}`}
-                >
-                  {dept.icon}
-                  <span>{dept.label}</span>
-                </button>
-              );
-            })}
-          </div>
-        )}
       </div>
     </header>
   );
