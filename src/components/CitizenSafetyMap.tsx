@@ -40,9 +40,22 @@ export const CitizenSafetyMap: React.FC<CitizenSafetyMapProps> = ({
 
         L.control.zoom({ position: 'topright' }).addTo(map);
 
-        // Clean light basemap for public readability
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-          maxZoom: 18,
+        // Real geographical base map (Reusing working Admin map configuration)
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+          maxZoom: 19,
+          attribution: '&copy; Esri &mdash; Source: Esri, Maxar, Earthstar Geographics',
+        }).addTo(map);
+
+        // Clear boundaries and place labels
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', {
+          maxZoom: 19,
+          opacity: 0.9,
+        }).addTo(map);
+
+        // Transportation and road network
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}', {
+          maxZoom: 19,
+          opacity: 0.85,
         }).addTo(map);
 
         const group = L.layerGroup().addTo(map);
@@ -137,10 +150,16 @@ export const CitizenSafetyMap: React.FC<CitizenSafetyMapProps> = ({
         [baseLat + 0.04, baseLng - 0.05],
         [baseLat + 0.08, baseLng - 0.08],
       ];
+      // White contrast casing
+      L.polyline(evacPoints, {
+        color: '#ffffff',
+        weight: 8,
+        opacity: 0.75,
+      }).addTo(group);
       L.polyline(evacPoints, {
         color: '#10b981',
         weight: 5,
-        opacity: 0.9,
+        opacity: 0.95,
       }).addTo(group).bindTooltip('🟢 Recommended Evacuation Route (Bypass R-21: High Elevation / Dry)', { sticky: true });
 
       // 4. Dangerous Inundated Road (🔴 Dangerous)
@@ -149,10 +168,16 @@ export const CitizenSafetyMap: React.FC<CitizenSafetyMapProps> = ({
         [baseLat - 0.02, baseLng + 0.05],
         [baseLat + 0.03, baseLng + 0.04],
       ];
+      // White contrast casing
+      L.polyline(dangerPoints, {
+        color: '#ffffff',
+        weight: 8,
+        opacity: 0.75,
+      }).addTo(group);
       L.polyline(dangerPoints, {
         color: '#dc2626',
         weight: 5,
-        opacity: 0.85,
+        opacity: 0.95,
         dashArray: '8 4',
       }).addTo(group).bindTooltip('🔴 Dangerous Road (Coastal SH-12: Projected 1.2m Flooding - AVOID)', { sticky: true });
 

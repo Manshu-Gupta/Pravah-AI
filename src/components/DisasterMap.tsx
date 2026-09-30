@@ -341,10 +341,9 @@ export const DisasterMap: React.FC<DisasterMapProps> = ({
           maxZoom: 19,
         }).addTo(map);
 
-        // Crisp road and boundary overlay
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png', {
+        // Crisp road and boundary overlay (ArcGIS Reference Boundaries & Places)
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', {
           maxZoom: 19,
-          subdomains: 'abcd',
           opacity: 0.9,
         }).addTo(map);
       } else if (mapType === 'terrain') {
@@ -352,9 +351,9 @@ export const DisasterMap: React.FC<DisasterMapProps> = ({
           maxZoom: 17,
         }).addTo(map);
       } else {
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+        // High-resolution roadmap (ArcGIS World Street Map)
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
           maxZoom: 19,
-          subdomains: 'abcd',
         }).addTo(map);
       }
     }
